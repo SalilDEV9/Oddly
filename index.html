@@ -83,7 +83,7 @@
     <h2 style="color: var(--gold); margin-top:0;">New Year Celebration By Salil</h2>
     <input type="text" id="name" placeholder="Name">
     <input type="text" id="fav" placeholder="Favorite Thing">
-    <div id="err">❌ Doraemon says: Only the REAL Salil can use that name!</div>
+    <div id="err">❌ Doraemon says: You cannot use Salil's name here!</div>
     <button onclick="go()">START Time Machine 🚀</button>
 </div>
 
@@ -105,7 +105,6 @@
     const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
     let parts = [], score = 0;
     
-    // Song IDs: Haan Main Galat, Twist, Love Aaj Kal Theme
     const playlist = ["aG2PQ8x9F4g", "hicN8rVmNXo", "v_yTsvZ8m08"];
     let songIdx = 0;
 
@@ -118,28 +117,19 @@
     }
 
     function go() {
-    const inputName = document.getElementById('name').value.trim();
-    
-    // List of all reserved names to block
-    const blockedNames = [
-        "salil", 
-        " salil kumar jha", 
-        "siddharth kumar jha ",
-        "achal kumar jha"
-         " achal"
-    ];
+        const fullName = document.getElementById('name').value.trim();
+        const inputNameLower = fullName.toLowerCase();
+        
+        // MASTER BLOCK LOGIC: Check if reserved words exist anywhere in the name
+        const reservedWords = ["salil", "siddharth", "achal"];
+        const isReserved = reservedWords.some(word => inputNameLower.includes(word));
 
-    // Check if the entered name matches any in our list
-    if (blockedNames.includes(inputName.toLowerCase())) {
-        const errorElement = document.getElementById('err');
-        errorElement.style.display = "block";
-        errorElement.innerText = "❌ Doraemon says: This name is reserved for the host!";
-        return;
-    }
+        if (isReserved) {
+            document.getElementById('err').style.display = "block";
+            return;
+        }
 
-    // ... rest of your go() function code follows
-
-        // Trigger autoplay inside the click event to satisfy browser security
+        // Automatic music trigger via user interaction
         const p = document.getElementById('player');
         p.src += "&autoplay=1";
 
@@ -147,7 +137,7 @@
         document.getElementById('ui-center').style.display = 'block';
         document.getElementById('score').style.display = 'block';
         document.getElementById('sp').style.display = 'block';
-        document.getElementById('t1').innerText = "Happy 2026, " + inputName + "!";
+        document.getElementById('t1').innerText = "Happy 2026, " + fullName + "!";
         document.getElementById('t2').innerText = "Wishing you endless " + document.getElementById('fav').value + "!";
         
         animate();
@@ -180,7 +170,6 @@
             explode(rect.left+30, rect.top+40, col);
             clearInterval(m); b.remove();
             
-            // Doraemon Response
             const doraMsg = document.getElementById('sp');
             doraMsg.innerText = "BOOM! Awesome!";
             setTimeout(() => { doraMsg.innerText = "Let's Dance!"; }, 1000);
@@ -206,4 +195,3 @@
 </script>
 </body>
 </html>
-
