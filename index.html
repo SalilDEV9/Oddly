@@ -7,78 +7,99 @@
     <style>
         :root {
             --primary-gold: #ffd700;
-            --deep-blue: #0a0a23;
+            --accent-blue: #00d4ff;
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow: hidden;
-            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
             background: #050510;
             color: white;
         }
 
         canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
 
+        /* Setup Screen */
         #setup-screen {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
             padding: 3rem;
             border-radius: 30px;
             text-align: center;
-            border: 2px solid var(--primary-gold);
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         input {
-            display: block; width: 250px; margin: 1.5rem auto;
+            display: block; width: 260px; margin: 1.5rem auto;
             padding: 15px; border-radius: 12px; border: none;
-            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9); font-size: 1rem;
         }
 
         button {
-            padding: 15px 40px; background: linear-gradient(45deg, #ffd700, #ffa500);
+            padding: 15px 45px; background: linear-gradient(45deg, #ffd700, #ffa500);
             border: none; border-radius: 30px; font-weight: bold;
-            cursor: pointer; font-size: 1.2rem; color: #333;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+            cursor: pointer; font-size: 1.2rem; color: #222;
+            transition: 0.3s;
         }
 
+        button:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary-gold); }
+
+        /* Greeting & Signature */
         #greeting-display {
-            position: absolute; width: 100%; top: 30%;
+            position: absolute; width: 100%; top: 25%;
             text-align: center; z-index: 5;
-            display: none;
+            display: none; animation: zoomIn 1.5s ease;
         }
 
         .salil-signature {
             font-family: 'Brush Script MT', cursive;
-            font-size: 2.5rem;
-            color: var(--primary-gold);
-            margin-top: 20px;
-            opacity: 0;
-            animation: fadeInSignature 3s forwards 1s;
+            font-size: 3rem; color: var(--primary-gold);
+            margin-top: 30px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
         }
 
-        @keyframes fadeInSignature {
-            to { opacity: 1; transform: translateY(-10px); }
+        /* Now Playing Widget */
+        #music-widget {
+            position: fixed; bottom: 20px; left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 100;
+        }
+
+        .music-icon { font-size: 1.5rem; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Score & Game Elements */
+        #score-board {
+            position: fixed; top: 20px; right: 20px;
+            font-size: 1.2rem; color: var(--primary-gold);
+            z-index: 100; display: none;
+            background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 20px;
         }
 
         .balloon {
-            position: absolute; width: 70px; height: 90px;
+            position: absolute; width: 65px; height: 85px;
             border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
             cursor: pointer; z-index: 3;
-            box-shadow: inset -8px -8px 15px rgba(0,0,0,0.3);
         }
 
-        #score-board {
-            position: fixed; top: 20px; right: 20px;
-            font-size: 1.5rem; color: var(--primary-gold);
-            z-index: 100; display: none; background: rgba(0,0,0,0.5);
-            padding: 10px 20px; border-radius: 15px;
-        }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -93,27 +114,36 @@
         <source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" type="audio/mpeg">
     </audio>
 
+    <div id="music-widget">
+        <div class="music-icon">🎵</div>
+        <div>
+            <div style="font-size: 0.7rem; color: #aaa; text-transform: uppercase;">Now Playing</div>
+            <div id="song-name" style="font-size: 0.9rem; font-weight: bold;">New Year Serenade 2026</div>
+        </div>
+    </div>
+
     <div id="setup-screen">
-        <h1 style="color: var(--primary-gold); margin-top:0;">2026 Celebration</h1>
-        <p>A special message awaits you...</p>
+        <h1 style="color: var(--primary-gold); margin: 0;">2026 Greetings</h1>
+        <p style="opacity: 0.8;">Salil has a surprise for you...</p>
         <input type="text" id="userName" placeholder="Enter Your Name">
-        <input type="text" id="userFavorite" placeholder="Something you love">
-        <button onclick="startCelebration()">See My Wish</button>
+        <input type="text" id="userFavorite" placeholder="Favorite Hobby?">
+        <button onclick="startCelebration()">Enter Celebration</button>
     </div>
 
     <div id="greeting-display">
-        <h1 id="main-wish" style="font-size: 4.5rem; margin-bottom: 10px; text-shadow: 0 0 20px #fff;"></h1>
-        <h3 id="fav-wish" style="color: #eee; font-weight: 300; font-size: 1.8rem;"></h3>
+        <h1 id="main-wish" style="font-size: 4rem; margin-bottom: 0;"></h1>
+        <h3 id="fav-wish" style="font-weight: 300; margin-top: 10px;"></h3>
         <div class="salil-signature">— Best Wishes from Salil</div>
     </div>
 
-    <div id="score-board">Pop Count: <span id="score">0</span></div>
+    <div id="score-board">Balloons Popped: <span id="score">0</span></div>
 
     <script>
         const canvas = document.getElementById('fireworksCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         let score = 0;
+        let mouseX = 0, mouseY = 0;
 
         function resize() {
             canvas.width = window.innerWidth;
@@ -122,44 +152,63 @@
         window.addEventListener('resize', resize);
         resize();
 
+        // Track mouse for sparkle trail
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            // Create subtle sparkles on move
+            if(Math.random() > 0.8) createExplosion(mouseX, mouseY, 1, '#ffd700');
+        });
+
         class Particle {
-            constructor(x, y, color) {
+            constructor(x, y, color, speedMult = 1) {
                 this.x = x; this.y = y; this.color = color;
-                this.velocity = { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 10 };
+                this.velocity = { 
+                    x: (Math.random() - 0.5) * (10 * speedMult), 
+                    y: (Math.random() - 0.5) * (10 * speedMult) 
+                };
                 this.alpha = 1;
             }
             draw() {
                 ctx.save(); ctx.globalAlpha = this.alpha;
-                ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
                 ctx.fillStyle = this.color; ctx.fill(); ctx.restore();
             }
             update() {
                 this.x += this.velocity.x; this.y += this.velocity.y;
-                this.velocity.y += 0.1; this.alpha -= 0.02;
+                this.velocity.y += 0.08; this.alpha -= 0.015;
             }
         }
 
-        function createExplosion(x, y) {
-            for (let i = 0; i < 40; i++) {
-                particles.push(new Particle(x, y, `hsl(${Math.random() * 360}, 100%, 60%)`));
+        function createExplosion(x, y, count = 30, color = null) {
+            for (let i = 0; i < count; i++) {
+                const pColor = color || `hsl(${Math.random() * 360}, 100%, 60%)`;
+                particles.push(new Particle(x, y, pColor));
             }
         }
 
         function startCelebration() {
-            document.getElementById('bgm').play();
+            const music = document.getElementById('bgm');
+            music.play();
             
             const name = document.getElementById('userName').value || "Guest";
-            const fav = document.getElementById('userFavorite').value || "happiness";
+            const fav = document.getElementById('userFavorite').value || "life";
             
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('greeting-display').style.display = 'block';
             document.getElementById('score-board').style.display = 'block';
+            document.getElementById('music-widget').style.display = 'flex';
             
             document.getElementById('main-wish').innerText = `Happy New Year, ${name}!`;
-            document.getElementById('fav-wish').innerText = `May 2026 be filled with ${fav}!`;
+            document.getElementById('fav-wish').innerText = `Wishing you incredible success in ${fav}!`;
 
             spawnBalloons();
             animate();
+
+            // Periodic automatic fireworks
+            setInterval(() => {
+                createExplosion(Math.random() * canvas.width, Math.random() * canvas.height * 0.5);
+            }, 3000);
         }
 
         function spawnBalloons() {
@@ -176,9 +225,8 @@
                 const move = setInterval(() => {
                     pos += speed;
                     b.style.bottom = pos + 'px';
-                    if (pos > window.innerHeight + 100) {
-                        clearInterval(move); b.remove();
-                    }
+                    b.style.transform = `rotate(${Math.sin(pos/50) * 10}deg)`;
+                    if (pos > window.innerHeight + 100) { clearInterval(move); b.remove(); }
                 }, 20);
 
                 b.onclick = () => {
@@ -187,12 +235,11 @@
                     score++;
                     document.getElementById('score').innerText = score;
                     const rect = b.getBoundingClientRect();
-                    createExplosion(rect.left + 35, rect.top + 45);
+                    createExplosion(rect.left + 30, rect.top + 40);
                     clearInterval(move); b.remove();
                 };
-
                 document.body.appendChild(b);
-            }, 1000);
+            }, 1200);
         }
 
         function animate() {
