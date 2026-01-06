@@ -1,176 +1,230 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Oddly | Ethereal Flow</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  :root {
-    --glass: rgba(0, 0, 0, 0.4);
-    --accent: #00f2ff;
-  }
-  body {
-    margin: 0;
-    font-family: 'Inter', system-ui, sans-serif;
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: background 2s ease-in-out;
-    background-color: #000;
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    overflow-x: hidden;
-  }
-  /* Overlay for readability */
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.4));
-    z-index: -1;
-  }
-  h1 { 
-    font-weight: 800; 
-    font-size: 3.5rem; 
-    margin-top: 60px; 
-    letter-spacing: -2px;
-    text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    margin-bottom: 0;
-  }
-  .tagline { opacity: 0.8; margin-bottom: 40px; font-weight: 300; letter-spacing: 2px; }
-  .card {
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 30px;
-    padding: 30px;
-    margin: 15px;
-    width: 85%;
-    max-width: 420px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .card:hover { transform: scale(1.02); border-color: var(--accent); }
-  button {
-    background: white;
-    color: black;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-  }
-  button:hover { 
-    background: var(--accent); 
-    box-shadow: 0 0 20px var(--accent);
-    transform: translateY(-2px);
-  }
-  input {
-    width: 90%;
-    padding: 14px;
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
-    color: white;
-    outline: none;
-    text-align: center;
-    font-size: 1rem;
-  }
-  .output {
-    margin-top: 20px;
-    font-weight: 500;
-    color: var(--accent);
-    min-height: 1.2em;
-    text-shadow: 0 0 10px rgba(0,242,255,0.3);
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ODDLY 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --glow: rgba(255, 255, 255, 0.15); }
+        body { font-family: 'Space Grotesk', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .neo-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+        .slider { -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none; transition: 0.2s; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: #fff; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px #fff; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .scanner::after { content: ""; position: absolute; width: 100%; height: 2px; background: #fff; top: 0; animation: scan 2s linear infinite; opacity: 0.3; }
+        .diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); background: linear-gradient(45deg, #333, #fff); }
+    </style>
 </head>
-<body id="bg">
+<body x-data="app()" class="h-screen w-screen overflow-hidden">
 
-<iframe src="https://www.youtube.com/embed/5qap5aO4i9A?autoplay=1&loop=1&playlist=5qap5aO4i9A&controls=0" 
-        style="display:none" allow="autoplay"></iframe>
+    <template x-if="view === 'auth'">
+        <div class="h-full flex flex-col items-center justify-center p-8 scanner relative">
+            <h1 class="text-[10px] tracking-[1em] opacity-30 mb-20 uppercase">Core_Initialize</h1>
+            <div class="w-full space-y-4">
+                <input type="text" x-model="user.name" placeholder="IDENT_NAME" class="w-full bg-transparent border-b border-white/20 p-4 text-center text-xl uppercase tracking-widest outline-none focus:border-white">
+                <button @click="login()" class="w-full py-4 glass text-[10px] tracking-[0.5em] hover:bg-white hover:text-black transition-all">ACCESS_SYSTEM</button>
+            </div>
+        </div>
+    </template>
 
-<h1>Oddly</h1>
-<p class="tagline">THE WEIRD SIDE OF PRODUCTIVITY</p>
+    <template x-if="view === 'dash'">
+        <div class="h-full p-6 flex flex-col">
+            <header class="flex justify-between items-start pt-4 mb-10">
+                <div>
+                    <p class="text-[10px] text-white/30">SYSTEM_OPERATOR</p>
+                    <h2 class="text-xl font-bold uppercase tracking-tight" x-text="user.name"></h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-white/30">UPTIME</p>
+                    <p class="text-[10px] font-mono" x-text="uptime"></p>
+                </div>
+            </header>
 
-<div class="card">
-  <h3>🎯 Decision Roulette</h3>
-  <input id="q" placeholder="Should I skip class?">
-  <br><br>
-  <button onclick="decide()">Spin</button>
-  <div id="dOut" class="output"></div>
-</div>
+            <div class="grid grid-cols-2 gap-4">
+                <div @click="view = 'compressor'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between border-white/20">
+                    <div class="w-4 h-4 border border-white"></div>
+                    <p class="text-xs font-bold leading-tight">THOUGHT<br>COMPRESSOR</p>
+                </div>
+                <div @click="view = 'simulator'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between">
+                    <div class="w-4 h-4 rounded-full border border-white"></div>
+                    <p class="text-xs font-bold leading-tight">LIFE<br>SIMULATOR</p>
+                </div>
+                <div @click="view = 'tree'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+                    <p class="text-xs font-bold leading-tight">DECISION<br>TREE</p>
+                </div>
+                <div @click="view = 'patterns'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between">
+                    <div class="flex gap-1"><div class="w-1 h-4 bg-white"></div><div class="w-1 h-2 bg-white/30"></div></div>
+                    <p class="text-xs font-bold leading-tight">PATTERN<br>DETECTOR</p>
+                </div>
+            </div>
 
-<div class="card">
-  <h3>⏳ How long will this take?</h3>
-  <input id="t" placeholder="learn guitar">
-  <br><br>
-  <button onclick="estimate()">Tell me</button>
-  <div id="tOut" class="output"></div>
-</div>
+            <div @click="view = 'load'" class="mt-4 glass p-6 rounded-3xl flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-widest">Brain Load Meter</p>
+                <div class="flex gap-1" x-text="loadEmoji()"></div>
+            </div>
+        </div>
+    </template>
 
-<div class="card">
-  <h3>🧠 Brain Reset</h3>
-  <button onclick="brain()">Reset me</button>
-  <div id="bOut" class="output"></div>
-</div>
+    <template x-if="view === 'compressor'">
+        <div class="h-full p-6 flex flex-col" x-data="{ state: 'input', text: '' }">
+            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
+            <div class="flex-grow flex flex-col">
+                <template x-if="state === 'input'">
+                    <div class="contents">
+                        <textarea x-model="text" class="flex-grow bg-transparent border border-white/10 rounded-2xl p-6 outline-none text-sm leading-relaxed" placeholder="PASTE THE NOISE..."></textarea>
+                        <button @click="state = 'result'" class="mt-6 py-4 bg-white text-black text-[10px] font-bold tracking-[0.5em] rounded-xl">COMPRESS_VOICE</button>
+                    </div>
+                </template>
+                <template x-if="state === 'result'">
+                    <div class="space-y-4">
+                        <div class="diamond w-16 h-16 mx-auto mb-8"></div>
+                        <div class="glass p-4 rounded-xl"><p class="text-[9px] text-white/40 mb-1">ESSENCE</p><p class="text-sm italic">"Action is the only cure for this specific anxiety."</p></div>
+                        <div class="glass p-4 rounded-xl"><p class="text-[9px] text-red-400 mb-1">BRUTAL_TRUTH</p><p class="text-sm">You are over-explaining because you feel guilty. Stop talking.</p></div>
+                        <button @click="state = 'input'; text = ''" class="w-full py-4 text-[10px] opacity-40">NEW_SCAN</button>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
 
-<script>
-// Dynamic Theme Logic
-function updateTheme() {
-  const hour = new Date().getHours();
-  let keyword = "space,nebula"; // Default
-  if (hour >= 5 && hour < 10) keyword = "misty,forest,morning";
-  if (hour >= 10 && hour < 17) keyword = "minimal,abstract,bright";
-  if (hour >= 17 && hour < 20) keyword = "sunset,ethereal";
-  if (hour >= 20 || hour < 5) keyword = "dark,cyberpunk,night";
+    <template x-if="view === 'simulator'">
+        <div class="h-full p-6 flex flex-col" x-data="{ money: 50, disc: 50, social: 50 }">
+            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
+            <div class="space-y-12 flex-grow">
+                <div class="space-y-4">
+                    <div class="flex justify-between text-[10px] tracking-widest uppercase"><span>Wealth</span><span x-text="money"></span></div>
+                    <input type="range" x-model="money" class="slider">
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between text-[10px] tracking-widest uppercase"><span>Discipline</span><span x-text="disc"></span></div>
+                    <input type="range" x-model="disc" class="slider">
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between text-[10px] tracking-widest uppercase"><span>Social</span><span x-text="social"></span></div>
+                    <input type="range" x-model="social" class="slider">
+                </div>
+                
+                <div class="glass p-8 rounded-3xl mt-10 text-center">
+                    <p class="text-[10px] opacity-40 mb-4 uppercase tracking-[0.3em]">5_Year_Trajectory</p>
+                    <h3 class="text-xl font-bold" x-text="getPrediction(money, disc, social)"></h3>
+                </div>
+            </div>
+        </div>
+    </template>
 
-  const url = `https://source.unsplash.com/featured/1920x1080?${keyword}&sig=${Math.random()}`;
-  document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${url}')`;
-}
+    <template x-if="view === 'load'">
+        <div class="h-full p-6 flex flex-col" x-data="{ m: 5, p: 5, d: 5 }">
+            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
+            <div class="space-y-8">
+                <p class="text-xs uppercase tracking-widest text-center opacity-40">Current Load Status</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <button @click="m = m > 1 ? m-1 : 10" class="glass h-32 flex flex-col items-center justify-center">
+                        <span class="text-[10px] mb-2">MENTAL</span>
+                        <span class="text-2xl" x-text="m"></span>
+                    </button>
+                    <button @click="p = p > 1 ? p-1 : 10" class="glass h-32 flex flex-col items-center justify-center">
+                        <span class="text-[10px] mb-2">PHYSICAL</span>
+                        <span class="text-2xl" x-text="p"></span>
+                    </button>
+                    <button @click="d = d > 1 ? d-1 : 10" class="glass h-32 flex flex-col items-center justify-center">
+                        <span class="text-[10px] mb-2">DIGITAL</span>
+                        <span class="text-2xl" x-text="d"></span>
+                    </button>
+                </div>
+                <div class="glass p-6 rounded-2xl border-white/20 text-center">
+                    <p class="text-[10px] mb-2 opacity-50 uppercase">Recommended_Action</p>
+                    <p class="text-lg font-bold" x-text="getAction(m, p, d)"></p>
+                </div>
+            </div>
+        </div>
+    </template>
 
-// Initial load and rotate background every 5 mins
-updateTheme();
-setInterval(updateTheme, 300000);
+    <template x-if="view === 'tree'">
+        <div class="h-full p-6 flex flex-col" x-data="{ step: 1, q: '' }">
+            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
+            <div class="flex-grow space-y-6">
+                <input x-model="q" placeholder="The Problem..." class="w-full bg-transparent text-xl font-bold outline-none border-b border-white/10 pb-4">
+                <div class="space-y-4">
+                    <div class="glass p-6 rounded-2xl relative overflow-hidden">
+                        <div class="absolute left-0 top-0 h-full w-1 bg-white"></div>
+                        <p class="text-[10px] opacity-40 mb-2">IF I DO IT</p>
+                        <p class="text-sm">High short-term stress, but the loop closes. Growth occurs via discomfort.</p>
+                    </div>
+                    <div class="glass p-6 rounded-2xl relative overflow-hidden">
+                        <div class="absolute left-0 top-0 h-full w-1 bg-red-500"></div>
+                        <p class="text-[10px] opacity-40 mb-2">IF I DON'T</p>
+                        <p class="text-sm">Instant relief. Long-term decay of self-trust. The problem scales with time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 
-function decide(){
-  let ans=[
-    "Absolutely yes. Stop overthinking.",
-    "No. Your future self will thank you.",
-    "Do it only if your heart is calm.",
-    "Delay it by one day.",
-    "Flip a real coin. I refuse."
-  ];
-  dOut.style.opacity = 0;
-  setTimeout(() => {
-    dOut.innerText=ans[Math.floor(Math.random()*ans.length)];
-    dOut.style.opacity = 1;
-  }, 200);
-}
+    <template x-if="view === 'patterns'">
+        <div class="h-full p-6 flex flex-col">
+            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
+            <div class="space-y-4">
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <p class="text-xs">Morning Scroll</p>
+                    <span class="text-red-500 text-[10px] font-bold">VULNERABILITY</span>
+                </div>
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <p class="text-xs">Late Night Work</p>
+                    <span class="text-yellow-500 text-[10px] font-bold">DIMINISHING RETURN</span>
+                </div>
+                <div class="glass p-4 rounded-xl flex justify-between items-center border-white/30">
+                    <p class="text-xs">Physical Movement</p>
+                    <span class="text-green-500 text-[10px] font-bold">CORE CATALYST</span>
+                </div>
+                <div class="p-8 text-center opacity-20 text-[10px] tracking-widest uppercase">
+                    Syncing with habits...
+                </div>
+            </div>
+        </div>
+    </template>
 
-function estimate(){
-  let base=["20 minutes","2 hours","3 days","1 week","1 month","a lifetime"];
-  tOut.innerText="Honestly? About "+base[Math.floor(Math.random()*base.length)];
-}
-
-function brain(){
-  let tasks=[
-    "Count backward from 137 by 7.",
-    "Name 5 animals without vowels.",
-    "Hold your breath for 10 seconds.",
-    "Write your name with your other hand."
-  ];
-  bOut.innerText=tasks[Math.floor(Math.random()*tasks.length)];
-}
-</script>
-
+    <script>
+        function app() {
+            return {
+                view: 'auth',
+                user: { name: localStorage.getItem('oddly_name') || '' },
+                uptime: '00:00:00',
+                init() {
+                    setInterval(() => {
+                        const now = new Date();
+                        this.uptime = now.toTimeString().split(' ')[0];
+                    }, 1000);
+                    if(this.user.name) this.view = 'dash';
+                },
+                login() {
+                    if(this.user.name) {
+                        localStorage.setItem('oddly_name', this.user.name);
+                        this.view = 'dash';
+                    }
+                },
+                getPrediction(m, d, s) {
+                    if (d > 80) return "Global Elite. High isolation, peak performance.";
+                    if (m > 70 && s > 70) return "The Charismatic Founder. Wealthy but chaotic.";
+                    if (d < 30) return "The Digital Ghost. Lost in the scroll.";
+                    return "Standard Trajectory. Regret likelihood: 40%.";
+                },
+                getAction(m, p, d) {
+                    if (m > 8) return "Leave your phone in a drawer for 2 hours.";
+                    if (p < 4) return "15 minutes of zone-2 cardio now.";
+                    if (d > 7) return "Unsubscribe from 5 emails immediately.";
+                    return "Stare at a wall for 3 minutes. No music.";
+                },
+                loadEmoji() {
+                    return "● ● ○ ○ ○";
+                }
+            }
+        }
+    </script>
 </body>
-</html>
+                      </html>
+                      
