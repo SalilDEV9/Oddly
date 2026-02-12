@@ -11,24 +11,20 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
         
-        /* HEADER */
         header { height:70px; padding:0 20px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:1000; }
         .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
         .header-main { display:flex; align-items:center; gap:15px; }
         .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.3rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; }
         
-        /* SEARCH BAR */
         .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.07); border-radius:8px; border:1px solid rgba(255,255,255,0.1); padding:5px 12px; position: relative; z-index: 1001; }
         input { width:100%; background:transparent; border:none; color:white; font-size:1rem; font-family:'Outfit',sans-serif; padding: 5px 0; user-select: text; }
         .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; padding: 0 5px; color: #aaa; }
 
-        /* LAYOUT */
         main { flex:1; display:flex; overflow:hidden; position:relative; }
         #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; }
         #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); }
         #player-embed { width:100%; height:100%; }
         
-        /* CONTROLS */
         .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:5px; }
         .action-btn { padding:10px 16px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:white; font-family:'Orbitron',sans-serif; font-size:0.7rem; cursor:pointer; }
         .action-btn:active { background: var(--neon-blue); color: #000; }
@@ -36,7 +32,6 @@
         #mute-btn { border-color: #ff9900; color: #ff9900; }
         #float-btn { border-color: #00ff88; color: #00ff88; }
         
-        /* SIDEBAR */
         #sidebar { width:320px; background:#080808; border-left:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; }
         .sidebar-header { padding:15px; font-size:0.75rem; color:#888; text-transform:uppercase; border-bottom:1px solid #222; }
         #queue { flex:1; overflow-y:auto; padding:10px; }
@@ -44,13 +39,13 @@
         .queue-item.active { border-color: var(--neon-blue); background:rgba(0,242,234,0.05); }
         .queue-item img { width:80px; height:45px; border-radius:4px; object-fit: cover; }
         
-        /* STEALTH & LYRICS */
-        #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 350px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
-        #lyrics-panel.show { transform: translateX(0); }
-        
         #stealth-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:none; align-items:center; justify-content:center; }
         #stealth-overlay.active { display:flex; }
         .stealth-hint { color: #333; font-family:'Orbitron'; font-size: 0.8rem; }
+
+        /* Lyrics Panel */
+        #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 350px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
+        #lyrics-panel.show { transform: translateX(0); }
 
         @media (max-width: 900px) {
             main { flex-direction: column; }
@@ -80,13 +75,14 @@
                 <button class="action-btn" id="mute-btn">🔇 MUTE</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
+                <button class="action-btn" id="cinema-btn">CINEMA</button>
                 <button class="action-btn" id="lyrics-btn">LYRICS</button>
             </div>
         </section>
         <aside id="sidebar"><div class="sidebar-header">Operational Queue</div><div id="queue"></div></aside>
         <aside id="lyrics-panel">
-            <h3 style="color:var(--neon-pink); text-align:center; margin-top:0;">NEURAL LYRICS</h3>
-            <div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center; font-size: 1rem;">--</div>
+            <h3 style="color:var(--neon-pink); text-align:center;">NEURAL LYRICS</h3>
+            <div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center;">--</div>
         </aside>
     </main>
     
@@ -150,7 +146,6 @@
             const item = state.playlist[i];
             if(item.snippet) {
                 updateMediaSession(item);
-                // "AI" Logic: Pass Channel Title too
                 fetchSmartLyrics(item.snippet.title, item.snippet.channelTitle);
             }
         }
@@ -192,12 +187,11 @@
             }
         }
 
-        // --- SMART LYRICS ENGINE (AI LOGIC) ---
+        // --- SMART LYRICS ENGINE (ISOLATED TO PREVENT BUGS) ---
         async function fetchSmartLyrics(title, channel) {
             const panel = document.getElementById('lyrics-text');
             panel.innerText = "Scanning Neural Net...";
             
-            // Step 1: Clean Data
             const cleanTitle = title.toLowerCase()
                 .replace(/\(.*\)/g, "").replace(/\[.*\]/g, "")
                 .replace(/official video|lyric video|audio|hd|4k|hq/g, "")
@@ -205,7 +199,6 @@
             
             const cleanChannel = channel ? channel.replace("VEVO", "").replace("Official", "").trim() : "";
 
-            // Helper to try fetch
             const tryFetch = async (a, s) => {
                 try {
                     const res = await fetch(`https://api.lyrics.ovh/v1/${a}/${s}`);
@@ -214,35 +207,30 @@
                 } catch { return null; }
             };
 
-            // Strategy 1: Artist from Channel, Song from Title
+            // Strategy 1: Channel as Artist
             let lyrics = await tryFetch(cleanChannel, cleanTitle);
 
-            // Strategy 2: Split Title (Artist - Song)
+            // Strategy 2: Split Title
             if (!lyrics && cleanTitle.includes("-")) {
                 const parts = cleanTitle.split("-");
                 lyrics = await tryFetch(parts[0].trim(), parts[1].trim());
-                // Strategy 3: Reverse Split (Song - Artist)
                 if (!lyrics) lyrics = await tryFetch(parts[1].trim(), parts[0].trim());
             }
 
-            if (lyrics) {
-                panel.innerText = lyrics;
-            } else {
-                panel.innerText = `Lyrics not found in database.\n\nTry searching for just the song name manually.`;
-            }
+            if (lyrics) panel.innerText = lyrics;
+            else panel.innerText = `Lyrics not found.\nTry manual search.`;
         }
 
         window.onload = () => {
             document.getElementById('search-btn').onclick = performSearch;
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
+            document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
             
-            // Fullscreen & Float Logic
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
             
-            // FLOAT (PiP) Attempt
             document.getElementById('float-btn').onclick = () => {
-                alert("Tip: For Floating Window, enable 'Desktop Mode' in browser or use the Home button while in Fullscreen.");
+                alert("For Floating: Use Android Home Gesture while in Fullscreen.");
             };
 
             document.getElementById('skip-btn').onclick = () => { const time = state.songTime; document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>'; createPlayer(time); };
