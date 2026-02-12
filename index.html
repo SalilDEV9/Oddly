@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+verift it and iprove logic <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -6,21 +6,68 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#0b0f1a;color:white}
-header{text-align:center;padding:15px;background:#111827}
-input{width:50%;padding:10px;border-radius:5px;border:none}
-button{padding:10px 15px;border:none;border-radius:5px;background:#ff0033;color:white;cursor:pointer}
-.main{display:flex;padding:20px}
-#player{flex:3}
-.sidebar{flex:1;margin-left:20px;max-height:80vh;overflow-y:auto}
-.video-item{display:flex;margin-bottom:10px;cursor:pointer;background:#1a1f2e;padding:5px;border-radius:5px;transition:0.2s}
-.video-item:hover{background:#2a2f45}
-.video-item.active{border:2px solid #ff0033}
-.video-item img{width:120px;border-radius:5px}
-.video-info{padding-left:10px;font-size:14px}
-.controls{text-align:center;margin-top:10px}
-.controls button{margin:5px;background:#1f2937}
-#noResults{text-align:center;margin-top:20px;color:#ff5555}
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0b0f1a;
+    color:white;
+}
+header{
+    padding:15px;
+    text-align:center;
+    background:#111827;
+}
+input{
+    width:50%;
+    padding:10px;
+    border-radius:5px;
+    border:none;
+}
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:5px;
+    background:#ff0033;
+    color:white;
+    cursor:pointer;
+}
+.main{
+    display:flex;
+    padding:20px;
+}
+#player{
+    flex:3;
+}
+.sidebar{
+    flex:1;
+    margin-left:20px;
+    max-height:80vh;
+    overflow-y:auto;
+}
+.video-item{
+    display:flex;
+    margin-bottom:10px;
+    cursor:pointer;
+    background:#1a1f2e;
+    padding:5px;
+    border-radius:5px;
+}
+.video-item img{
+    width:120px;
+    border-radius:5px;
+}
+.video-info{
+    padding-left:10px;
+    font-size:14px;
+}
+.controls{
+    text-align:center;
+    margin-top:10px;
+}
+.controls button{
+    margin:5px;
+    background:#1f2937;
+}
 </style>
 </head>
 
@@ -39,17 +86,16 @@ button{padding:10px 15px;border:none;border-radius:5px;background:#ff0033;color:
 <div class="controls">
 <button onclick="player.playVideo()">▶ Play</button>
 <button onclick="player.pauseVideo()">⏸ Pause</button>
-<button onclick="player.seekTo(Math.max(player.getCurrentTime()-10,0))">⏪ -10s</button>
+<button onclick="player.seekTo(player.getCurrentTime()-10)">⏪ -10s</button>
 <button onclick="player.seekTo(player.getCurrentTime()+10)">⏩ +10s</button>
 </div>
-<div id="noResults"></div>
 </div>
 
 <div class="sidebar" id="recommendations"></div>
 </div>
 
 <script>
-const API_KEY = "YOUR_SECURED_KEY_HERE";
+const API_KEY = "AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w";
 let player;
 let playlist = [];
 let currentIndex = 0;
@@ -64,41 +110,23 @@ function onYouTubeIframeAPIReady(){
 }
 
 function searchVideos(){
-    const q = document.getElementById("searchInput").value.trim();
-    const noResultsDiv = document.getElementById("noResults");
-    noResultsDiv.textContent = "";
-
-    if(!q){ alert("Please enter a search term!"); return; }
-
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(q)}&key=${API_KEY}`)
-    .then(res=>res.json())
-    .then(data=>{
-        if(!data.items || data.items.length===0){
-            playlist = [];
-            currentIndex = 0;
-            document.getElementById("recommendations").innerHTML="";
-            player.stopVideo();
-            noResultsDiv.textContent = "No results found!";
-            return;
-        }
-        playlist = data.items.map(i=>i.id.videoId);
+    const q = document.getElementById("searchInput").value;
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${q}&key=${API_KEY}`)
+    .then(r=>r.json())
+    .then(d=>{
+        playlist = d.items.map(i=>i.id.videoId);
         currentIndex = 0;
         loadVideo(playlist[0]);
-        showSidebar(data.items);
-    })
-    .catch(err=>{
-        console.error("API Error:", err);
-        alert("Failed to fetch videos. Try again later.");
+        showSidebar(d.items);
     });
 }
 
 function loadVideo(id){
     player.loadVideoById(id);
-    highlightCurrentVideo();
 }
 
 function onPlayerStateChange(e){
-    if(e.data === YT.PlayerState.ENDED){
+    if(e.data == YT.PlayerState.ENDED){
         currentIndex++;
         if(currentIndex < playlist.length){
             loadVideo(playlist[currentIndex]);
@@ -109,29 +137,15 @@ function onPlayerStateChange(e){
 function showSidebar(items){
     const container = document.getElementById("recommendations");
     container.innerHTML = "";
-    items.forEach((v,i)=>{
+    items.forEach(v=>{
         const div = document.createElement("div");
         div.className="video-item";
         div.innerHTML = `
-            <img src="${v.snippet.thumbnails?.medium?.url || ''}">
+            <img src="${v.snippet.thumbnails.medium.url}">
             <div class="video-info">${v.snippet.title}</div>
         `;
-        div.onclick = ()=>{
-            currentIndex = i;
-            loadVideo(v.id.videoId);
-        };
+        div.onclick = ()=> loadVideo(v.id.videoId);
         container.appendChild(div);
-    });
-    highlightCurrentVideo();
-}
-
-function highlightCurrentVideo(){
-    const items = document.querySelectorAll(".video-item");
-    items.forEach((el,i)=>{
-        el.classList.toggle("active", i===currentIndex);
-        if(i===currentIndex){
-            el.scrollIntoView({behavior:"smooth", block:"nearest"});
-        }
     });
 }
 </script>
