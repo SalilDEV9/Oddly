@@ -16,7 +16,7 @@
 
         body {
             margin: 0;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
@@ -25,7 +25,6 @@
             overflow: hidden;
         }
 
-        /* Header */
         header {
             padding: 1rem 2rem;
             display: flex;
@@ -33,7 +32,6 @@
             align-items: center;
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             z-index: 10;
         }
 
@@ -44,10 +42,7 @@
             border: 1px solid var(--border);
             border-radius: 25px;
             padding: 4px 15px;
-            transition: border 0.3s;
         }
-
-        .search-box:focus-within { border-color: var(--accent); }
 
         input {
             flex: 1;
@@ -56,7 +51,6 @@
             padding: 10px;
             color: white;
             outline: none;
-            font-size: 0.95rem;
         }
 
         button#search-btn {
@@ -67,7 +61,6 @@
             font-size: 1.2rem;
         }
 
-        /* Main Viewport */
         main {
             display: grid;
             grid-template-columns: 1fr 380px;
@@ -85,27 +78,16 @@
 
         #player { 
             width: 100%; 
-            max-width: 1200px;
             aspect-ratio: 16/9; 
             border-radius: 12px;
             box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
         }
 
-        /* Sidebar */
         #sidebar {
             background: var(--surface);
             border-left: 1px solid var(--border);
             overflow-y: auto;
             padding: 20px;
-        }
-
-        .sidebar-header {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-weight: bold;
         }
 
         .video-item {
@@ -116,44 +98,23 @@
             margin-bottom: 10px;
             border-radius: 10px;
             cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
+            transition: 0.2s;
         }
 
         .video-item:hover { background: #252525; }
-
-        .video-item.active { 
-            background: rgba(0, 212, 255, 0.1); 
-            border-color: var(--accent); 
-        }
-
-        .video-item img { 
-            width: 100%; 
-            border-radius: 6px; 
-            object-fit: cover;
-        }
-
-        .video-item .title { 
-            font-size: 0.85rem; 
-            font-weight: 500;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .video-item.active { background: rgba(0, 212, 255, 0.1); border: 1px solid var(--accent); }
+        .video-item img { width: 100%; border-radius: 6px; }
+        .video-item .title { font-size: 0.85rem; font-weight: 500; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 800; font-size: 1.4rem; letter-spacing: -1px;">
+    <div style="font-weight: 800; font-size: 1.4rem;">
         <span style="color: var(--accent);">JARBES</span> HUB
     </div>
     <div class="search-box">
-        <input type="text" id="query" placeholder="Search YouTube content, Sir...">
+        <input type="text" id="query" placeholder="Search songs or videos, Sir...">
         <button id="search-btn">⌕</button>
     </div>
 </header>
@@ -164,22 +125,15 @@
     </section>
     
     <aside id="sidebar">
-        <div class="sidebar-header">Automated Queue</div>
-        <div id="results-list">
-            <div style="color: #666; text-align: center; margin-top: 50px;">Enter a query to begin.</div>
-        </div>
+        <div id="results-list"></div>
     </aside>
 </main>
 
 <script>
     const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w';
     let player;
-    let state = {
-        playlist: [],
-        currentIndex: 0
-    };
+    let state = { playlist: [], currentIndex: 0 };
 
-    // Initialize YT Player API
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             events: {
@@ -193,8 +147,11 @@
         const query = document.getElementById('query').value;
         if (!query) return;
 
+        // UPDATED: videoCategoryId=10 (Music) added to prioritize songs
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${API_KEY}`;
+        
         try {
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&videoEmbeddable=true&key=${API_KEY}`);
+            const res = await fetch(url);
             const data = await res.json();
             
             if (data.items && data.items.length > 0) {
@@ -203,11 +160,10 @@
                 renderSidebar();
                 loadVideo(0);
             } else {
-                alert("No embeddable results found, Sir.");
+                alert("No results found, Sir. Try a different search term.");
             }
         } catch (err) {
-            console.error(err);
-            alert("API Error. Please verify your quota or key restrictions.");
+            alert("API Error. Please check your key or daily quota.");
         }
     }
 
@@ -225,33 +181,26 @@
         state.currentIndex = index;
         const vId = state.playlist[index].id.videoId;
         player.loadVideoById(vId);
-        
-        // Auto-scroll sidebar to active item
         renderSidebar();
-        const activeElem = document.querySelector('.video-item.active');
-        if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function onPlayerStateChange(event) {
-        // YT.PlayerState.ENDED = 0
-        if (event.data === 0) {
+        if (event.data === YT.PlayerState.ENDED) {
             if (state.currentIndex < state.playlist.length - 1) {
                 loadVideo(state.currentIndex + 1);
             }
         }
     }
 
-    function onPlayerError() {
-        // Skip current video if it can't be played (e.g. copyright/restricted)
+    function onPlayerError(e) {
+        console.warn("This video is restricted from embedding. Skipping to next...");
         if (state.currentIndex < state.playlist.length - 1) {
             loadVideo(state.currentIndex + 1);
         }
     }
 
     document.getElementById('search-btn').addEventListener('click', searchVideos);
-    document.getElementById('query').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') searchVideos();
-    });
+    document.getElementById('query').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchVideos(); });
 </script>
 
 </body>
