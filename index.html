@@ -9,7 +9,7 @@
     <style>
         /* --- 1. DESIGN SYSTEM --- */
         :root {
-            --glass: rgba(12, 12, 12, 0.9);
+            --glass: rgba(12, 12, 12, 0.95);
             --glass-border: rgba(255, 255, 255, 0.08);
             --neon-blue: #00f2ea;
             --neon-pink: #ff0055;
@@ -123,11 +123,9 @@
         }
         .action-btn:active { background: var(--neon-blue); color: #000; }
 
-        /* AOD BUTTON */
         #aod-btn { 
             border-color: var(--neon-blue); 
             background: rgba(0, 242, 234, 0.1); 
-            box-shadow: 0 0 10px rgba(0, 242, 234, 0.1);
         }
 
         .dev-badge {
@@ -200,26 +198,17 @@
         #lyrics-panel.show { transform: translateX(0); }
         @media (max-width: 900px) { #lyrics-panel { width: 100%; } }
 
-        /* --- 6. ALWAYS ON DISPLAY (AOD) OVERLAY --- */
+        /* AOD OVERLAY */
         #aod-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: black; z-index: 9999; display: none;
             flex-direction: column; align-items: center; justify-content: center;
-            cursor: none; /* Hide cursor */
         }
         #aod-overlay.active { display: flex; }
-
-        /* Floating Content Container */
-        #aod-content {
-            text-align: center;
-            position: absolute;
-            transition: all 5s linear; /* Smooth floating movement */
-        }
-
+        #aod-content { text-align: center; position: absolute; transition: all 5s linear; }
         .aod-time { font-family: 'Orbitron'; font-size: 3rem; color: #444; font-weight: 900; }
         .aod-song { font-family: 'Outfit'; font-size: 1.2rem; color: #888; margin-top: 10px; max-width: 300px; }
         .aod-battery { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--neon-blue); margin-top: 20px; }
-        .aod-hint { position: absolute; bottom: 50px; color: #333; font-size: 0.8rem; width: 100%; text-align: center; }
 
         /* Cinema Mode */
         body.cinema-mode #sidebar { display: none; }
@@ -273,7 +262,7 @@
             <div class="aod-song" id="aod-track">No Active Song</div>
             <div class="aod-battery" id="aod-bat">--%</div>
         </div>
-        <div class="aod-hint">DOUBLE TAP TO WAKE</div>
+        <div style="position:absolute; bottom:50px; color:#333; font-size:0.8rem;">DOUBLE TAP TO WAKE</div>
     </div>
 
     <audio id="ghost-audio" loop><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
@@ -322,10 +311,13 @@
             const item = state.playlist[i];
             player.loadVideoById(item.id.videoId);
             renderQueue();
-            fetchLyrics(item.snippet.title);
-            // Update AOD Text
+            
+            // INTELLIGENT LYRICS SEARCH
+            // We pass both Title and Channel Name to help the search
+            fetchLyrics(item.snippet.title, item.snippet.channelTitle);
+            
             document.getElementById('aod-track').innerText = item.snippet.title;
-            // Media Session
+            
             if('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: item.snippet.title, artist: item.snippet.channelTitle,
@@ -356,20 +348,61 @@
 
         function nextVideo() { if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); }
 
-        async function fetchLyrics(title) {
+        /* --- THE INTELLIGENT LYRICS PARSER --- */
+        async function fetchLyrics(title, channelName) {
             const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Searching...";
-            let parts = title.split('-');
-            let artist = parts[0] || ""; let song = parts[1] || title;
-            song = song.replace(/\(.*\)|\[.*\]/g, "").trim();
+            panel.innerText = "Analyzing Metadata...";
+
+            // 1. CLEAN THE TITLE (Remove Garbage)
+            // Removes: (Official), [Video], ft., feat., |, //, 4K, HD, etc.
+            let cleanTitle = title.toLowerCase()
+                .replace(/\(.*\)/g, "") 
+                .replace(/\[.*\]/g, "") 
+                .replace(/official video|lyric video|official audio|audio|hq|hd|4k/g, "")
+                .replace(/ft\.|feat\.|starring|from/g, "")
+                .replace(/[|:;"]/g, "")
+                .trim();
+
+            // 2. GUESS ARTIST & SONG
+            let artist = "", song = "";
+
+            // Strategy A: If title has "-", assume Artist - Song
+            if (cleanTitle.includes("-")) {
+                let parts = cleanTitle.split("-");
+                artist = parts[0].trim();
+                song = parts[1].trim();
+            } else {
+                // Strategy B: If no "-", assume Title is Song and Channel is Artist
+                artist = channelName.replace("VEVO", "").trim(); // Remove VEVO from channel
+                song = cleanTitle;
+            }
+
+            // 3. ATTEMPT SEARCH
             try {
-                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
-                const data = await res.json();
-                panel.innerText = data.lyrics || "Lyrics not found.";
+                let res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
+                let data = await res.json();
+                
+                if(data.lyrics) {
+                    panel.innerText = data.lyrics;
+                } else {
+                    // Strategy C: Swap Artist and Song (Some titles are Song - Artist)
+                    if (cleanTitle.includes("-")) {
+                         let parts = cleanTitle.split("-");
+                         let swapArtist = parts[1].trim();
+                         let swapSong = parts[0].trim();
+                         let res2 = await fetch(`https://api.lyrics.ovh/v1/${swapArtist}/${swapSong}`);
+                         let data2 = await res2.json();
+                         if(data2.lyrics) {
+                             panel.innerText = data2.lyrics;
+                             return;
+                         }
+                    }
+                    panel.innerText = `Lyrics not found for:\n"${song}" by "${artist}"\n\n(Database misses some songs)`;
+                }
             } catch(e) { panel.innerText = "Lyrics unavailable."; }
         }
 
-        /* --- GENIUS LOGIC: AOD ENGINE --- */
+        /* --- UI LOGIC --- */
         window.onload = () => {
             document.getElementById('search-btn').onclick = performSearch;
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
@@ -383,26 +416,19 @@
 
             document.getElementById('aod-btn').onclick = async () => {
                 aodOverlay.classList.add('active');
-                if(navigator.wakeLock) await navigator.wakeLock.request('screen'); // Keep CPU Awake
-                if(navigator.vibrate) navigator.vibrate(50); // Haptic Click
-                
-                updateClock();
-                updateBattery();
-                aodInterval = setInterval(() => {
-                    updateClock();
-                    moveContent(); // Prevent Burn-in
-                }, 60000); // Every minute
+                if(navigator.wakeLock) await navigator.wakeLock.request('screen');
+                if(navigator.vibrate) navigator.vibrate(50);
+                updateClock(); updateBattery();
+                aodInterval = setInterval(() => { updateClock(); moveContent(); }, 60000);
             };
 
-            // Double Tap to Wake
             let lastTap = 0;
             aodOverlay.addEventListener('click', (e) => {
                 const currentTime = new Date().getTime();
                 const tapLength = currentTime - lastTap;
                 if (tapLength < 500 && tapLength > 0) {
-                    // Double Tap Detected
                     aodOverlay.classList.remove('active');
-                    if(navigator.vibrate) navigator.vibrate([50, 50, 50]); // Success Vibrate
+                    if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
                     clearInterval(aodInterval);
                 }
                 lastTap = currentTime;
@@ -410,8 +436,7 @@
 
             function updateClock() {
                 const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                document.getElementById('aod-clock').innerText = timeString;
+                document.getElementById('aod-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
 
             async function updateBattery() {
@@ -422,7 +447,6 @@
             }
 
             function moveContent() {
-                // Randomly move the text block slightly to prevent OLED burn-in
                 const x = Math.floor(Math.random() * 20) - 10;
                 const y = Math.floor(Math.random() * 40) - 20;
                 aodContent.style.transform = `translate(${x}px, ${y}px)`;
