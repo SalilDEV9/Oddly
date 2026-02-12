@@ -11,57 +11,32 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
         
-        /* HEADER - SIMPLIFIED & SECURE */
+        /* HEADER */
         header { 
-            height: 80px; 
-            padding: 10px 15px; 
-            background: #000; /* Solid background to prevent overlap issues */
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            flex-shrink: 0; 
-            z-index: 10000; 
-            position: relative; 
+            height: 80px; padding: 10px 15px; background: var(--glass); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; 
+            flex-direction: column; justify-content: center; flex-shrink: 0; z-index: 5000; 
         }
-        
-        .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px; pointer-events: none; }
+        .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; pointer-events: none; }
         .header-main { display:flex; align-items:center; gap:10px; width: 100%; }
         .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.2rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; pointer-events: none; }
         
-        /* SEARCH BAR - THE "TYPING FIX" */
+        /* SEARCH BAR - FORM WRAPPED FOR LAPTOP SUPPORT */
+        #search-form { flex: 1; display: flex; width: 100%; margin: 0; }
         .search-bar { 
-            flex: 1; 
-            display: flex; 
-            background: #111; /* Solid Dark Background */
-            border-radius: 8px; 
-            border: 1px solid #333; 
-            height: 44px; /* Taller for easier tapping */
-            align-items: center; 
-            position: relative; 
-            z-index: 2147483647; /* Max Integer Z-Index */
+            flex: 1; display: flex; background: #1a1a1a; /* Solid Background for Click Target */
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); 
+            padding: 0 10px; height: 42px; align-items: center; 
+            cursor: text; /* Tells Laptop Mouse "You can type here" */
         }
-        
         input { 
-            flex: 1;
-            height: 100%; 
-            background: transparent; 
-            border: none; 
-            color: var(--neon-blue); /* Neon Text so you can SEE it */
-            font-size: 16px; /* Prevents iOS Zoom */
-            font-family: 'Outfit', sans-serif; 
-            padding: 0 10px;
-            margin: 0; 
-            pointer-events: auto !important;
-            opacity: 1 !important;
+            flex: 1; height: 100%; background: transparent; border: none; 
+            color: #ffffff; font-size: 16px; font-family: 'Outfit', sans-serif; 
+            padding: 0; margin: 0;
         }
-        
-        /* Placeholder styling */
-        input::placeholder { color: #555; opacity: 1; }
+        .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; padding-left: 10px; color: #aaa; }
 
-        .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; padding: 0 10px; color: #aaa; pointer-events: auto; }
-
-        /* MAIN LAYOUT */
+        /* LAYOUT */
         main { flex:1; display:flex; overflow:hidden; position:relative; }
         #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; z-index: 1; }
         
@@ -70,8 +45,9 @@
         
         /* MINI FLOAT MODE */
         #player-container.mini-float {
-            position: fixed; bottom: 20px; right: 20px; width: 220px; z-index: 20000;
-            border: 2px solid var(--neon-blue); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            position: fixed; bottom: 20px; right: 20px; width: 240px; z-index: 20000;
+            border: 2px solid var(--neon-blue); border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
         }
 
         .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:5px; z-index: 2; }
@@ -107,10 +83,12 @@
         <div class="dev-top">Engineered by <span style="color:var(--neon-blue)">Salil</span></div>
         <div class="header-main">
             <div class="brand">TITAN</div>
-            <div class="search-bar">
-                <input type="text" id="query" placeholder="Search Song..." value="Arijit Singh Audio" autocomplete="off">
-                <button class="search-btn-icon" id="search-btn">🔍</button>
-            </div>
+            <form id="search-form" onsubmit="event.preventDefault(); performSearch();">
+                <div class="search-bar">
+                    <input type="text" id="query" placeholder="Type song name..." value="Arijit Singh Audio" autocomplete="off" onclick="this.focus();">
+                    <button type="submit" class="search-btn-icon">🔍</button>
+                </div>
+            </form>
         </div>
     </header>
     <main>
@@ -141,13 +119,11 @@
         const ghostAudio = document.getElementById('ghost-audio');
 
         function onYouTubeIframeAPIReady() {
-            // Initial Empty Player
             player = new YT.Player('player-embed', {
                 height: '100%', width: '100%',
                 playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
                 events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
-            // Auto-trigger search after 1s
             setTimeout(performSearch, 1000);
         }
 
@@ -156,6 +132,9 @@
             const q = qInp.value.trim();
             if(!q) return;
 
+            // Optional: Blur on mobile, Keep focus on laptop
+            // qInp.blur(); 
+            
             const queueDiv = document.getElementById('queue');
             queueDiv.style.opacity = '0.5'; 
             
@@ -168,7 +147,6 @@
                     state.playlist = data.items;
                     state.index = 0;
                     renderQueue();
-                    // Load the first video
                     loadVideo(0);
                 } else {
                     console.log("Titan Log: No results."); 
@@ -255,8 +233,6 @@
         }
 
         window.onload = () => {
-            document.getElementById('search-btn').onclick = performSearch;
-            document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
             
