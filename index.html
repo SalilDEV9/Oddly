@@ -1,230 +1,224 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ODDLY 2.0</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --glow: rgba(255, 255, 255, 0.15); }
-        body { font-family: 'Space Grotesk', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .neo-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
-        .slider { -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none; transition: 0.2s; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: #fff; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px #fff; }
-        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-        .scanner::after { content: ""; position: absolute; width: 100%; height: 2px; background: #fff; top: 0; animation: scan 2s linear infinite; opacity: 0.3; }
-        .diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); background: linear-gradient(45deg, #333, #fff); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Command Center</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    color: white;
+}
+
+/* Animated Gradient Background */
+body {
+    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #6a11cb, #2575fc);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    backdrop-filter: blur(10px);
+}
+
+.card {
+    background: rgba(0,0,0,0.6);
+    padding: 40px;
+    border-radius: 20px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0,0,0,0.4);
+    animation: fadeIn 1.2s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+.hidden {
+    display: none;
+}
+
+.dashboard {
+    padding: 30px;
+    overflow-y: auto;
+    height: 100vh;
+}
+
+.section {
+    margin: 30px 0;
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 15px;
+    animation: fadeIn 1s ease;
+}
+
+.progress-bar {
+    height: 20px;
+    background: #444;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+}
+
+.logout {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+</style>
 </head>
-<body x-data="app()" class="h-screen w-screen overflow-hidden">
 
-    <template x-if="view === 'auth'">
-        <div class="h-full flex flex-col items-center justify-center p-8 scanner relative">
-            <h1 class="text-[10px] tracking-[1em] opacity-30 mb-20 uppercase">Core_Initialize</h1>
-            <div class="w-full space-y-4">
-                <input type="text" x-model="user.name" placeholder="IDENT_NAME" class="w-full bg-transparent border-b border-white/20 p-4 text-center text-xl uppercase tracking-widest outline-none focus:border-white">
-                <button @click="login()" class="w-full py-4 glass text-[10px] tracking-[0.5em] hover:bg-white hover:text-black transition-all">ACCESS_SYSTEM</button>
-            </div>
+<body>
+
+<div class="container" id="loginScreen">
+    <div class="card">
+        <h2>AI System Access</h2>
+        <input type="text" id="username" placeholder="Enter your name">
+        <button onclick="login()">Access Dashboard</button>
+    </div>
+</div>
+
+<div class="dashboard hidden" id="dashboard">
+    <button class="logout" onclick="logout()">Logout</button>
+    <h1>Welcome, <span id="displayName"></span></h1>
+    <h3>AI Engineer Command Center</h3>
+
+    <div class="section">
+        <h2>🧠 AI Prediction Engine</h2>
+        <input type="text" id="predictionInput" placeholder="Type something...">
+        <button onclick="predict()">Analyze</button>
+        <p id="predictionOutput"></p>
+    </div>
+
+    <div class="section">
+        <h2>📊 Train Neural Network</h2>
+        <button onclick="trainAI()">Start Training</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
         </div>
-    </template>
+        <p id="trainingStatus"></p>
+    </div>
 
-    <template x-if="view === 'dash'">
-        <div class="h-full p-6 flex flex-col">
-            <header class="flex justify-between items-start pt-4 mb-10">
-                <div>
-                    <p class="text-[10px] text-white/30">SYSTEM_OPERATOR</p>
-                    <h2 class="text-xl font-bold uppercase tracking-tight" x-text="user.name"></h2>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px] text-white/30">UPTIME</p>
-                    <p class="text-[10px] font-mono" x-text="uptime"></p>
-                </div>
-            </header>
+    <div class="section">
+        <h2>🚀 Projects</h2>
+        <p><strong>AI Chatbot:</strong> NLP-powered conversation system.</p>
+        <p><strong>Computer Vision:</strong> Deep learning image detection model.</p>
+        <p><strong>Predictive Analytics:</strong> ML forecasting engine.</p>
+    </div>
+</div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div @click="view = 'compressor'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between border-white/20">
-                    <div class="w-4 h-4 border border-white"></div>
-                    <p class="text-xs font-bold leading-tight">THOUGHT<br>COMPRESSOR</p>
-                </div>
-                <div @click="view = 'simulator'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between">
-                    <div class="w-4 h-4 rounded-full border border-white"></div>
-                    <p class="text-xs font-bold leading-tight">LIFE<br>SIMULATOR</p>
-                </div>
-                <div @click="view = 'tree'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
-                    <p class="text-xs font-bold leading-tight">DECISION<br>TREE</p>
-                </div>
-                <div @click="view = 'patterns'" class="glass p-6 rounded-3xl aspect-square flex flex-col justify-between">
-                    <div class="flex gap-1"><div class="w-1 h-4 bg-white"></div><div class="w-1 h-2 bg-white/30"></div></div>
-                    <p class="text-xs font-bold leading-tight">PATTERN<br>DETECTOR</p>
-                </div>
-            </div>
+<script>
 
-            <div @click="view = 'load'" class="mt-4 glass p-6 rounded-3xl flex items-center justify-between">
-                <p class="text-xs font-bold uppercase tracking-widest">Brain Load Meter</p>
-                <div class="flex gap-1" x-text="loadEmoji()"></div>
-            </div>
-        </div>
-    </template>
+// Auto login if saved
+window.onload = function() {
+    const user = localStorage.getItem("aiUser");
+    if (user) {
+        showDashboard(user);
+    }
+};
 
-    <template x-if="view === 'compressor'">
-        <div class="h-full p-6 flex flex-col" x-data="{ state: 'input', text: '' }">
-            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
-            <div class="flex-grow flex flex-col">
-                <template x-if="state === 'input'">
-                    <div class="contents">
-                        <textarea x-model="text" class="flex-grow bg-transparent border border-white/10 rounded-2xl p-6 outline-none text-sm leading-relaxed" placeholder="PASTE THE NOISE..."></textarea>
-                        <button @click="state = 'result'" class="mt-6 py-4 bg-white text-black text-[10px] font-bold tracking-[0.5em] rounded-xl">COMPRESS_VOICE</button>
-                    </div>
-                </template>
-                <template x-if="state === 'result'">
-                    <div class="space-y-4">
-                        <div class="diamond w-16 h-16 mx-auto mb-8"></div>
-                        <div class="glass p-4 rounded-xl"><p class="text-[9px] text-white/40 mb-1">ESSENCE</p><p class="text-sm italic">"Action is the only cure for this specific anxiety."</p></div>
-                        <div class="glass p-4 rounded-xl"><p class="text-[9px] text-red-400 mb-1">BRUTAL_TRUTH</p><p class="text-sm">You are over-explaining because you feel guilty. Stop talking.</p></div>
-                        <button @click="state = 'input'; text = ''" class="w-full py-4 text-[10px] opacity-40">NEW_SCAN</button>
-                    </div>
-                </template>
-            </div>
-        </div>
-    </template>
+function login() {
+    const name = document.getElementById("username").value;
+    if (name.trim() === "") return;
+    localStorage.setItem("aiUser", name);
+    showDashboard(name);
+}
 
-    <template x-if="view === 'simulator'">
-        <div class="h-full p-6 flex flex-col" x-data="{ money: 50, disc: 50, social: 50 }">
-            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
-            <div class="space-y-12 flex-grow">
-                <div class="space-y-4">
-                    <div class="flex justify-between text-[10px] tracking-widest uppercase"><span>Wealth</span><span x-text="money"></span></div>
-                    <input type="range" x-model="money" class="slider">
-                </div>
-                <div class="space-y-4">
-                    <div class="flex justify-between text-[10px] tracking-widest uppercase"><span>Discipline</span><span x-text="disc"></span></div>
-                    <input type="range" x-model="disc" class="slider">
-                </div>
-                <div class="space-y-4">
-                    <div class="flex justify-between text-[10px] tracking-widest uppercase"><span>Social</span><span x-text="social"></span></div>
-                    <input type="range" x-model="social" class="slider">
-                </div>
-                
-                <div class="glass p-8 rounded-3xl mt-10 text-center">
-                    <p class="text-[10px] opacity-40 mb-4 uppercase tracking-[0.3em]">5_Year_Trajectory</p>
-                    <h3 class="text-xl font-bold" x-text="getPrediction(money, disc, social)"></h3>
-                </div>
-            </div>
-        </div>
-    </template>
+function showDashboard(name) {
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+    document.getElementById("displayName").innerText = name;
+}
 
-    <template x-if="view === 'load'">
-        <div class="h-full p-6 flex flex-col" x-data="{ m: 5, p: 5, d: 5 }">
-            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
-            <div class="space-y-8">
-                <p class="text-xs uppercase tracking-widest text-center opacity-40">Current Load Status</p>
-                <div class="grid grid-cols-3 gap-2">
-                    <button @click="m = m > 1 ? m-1 : 10" class="glass h-32 flex flex-col items-center justify-center">
-                        <span class="text-[10px] mb-2">MENTAL</span>
-                        <span class="text-2xl" x-text="m"></span>
-                    </button>
-                    <button @click="p = p > 1 ? p-1 : 10" class="glass h-32 flex flex-col items-center justify-center">
-                        <span class="text-[10px] mb-2">PHYSICAL</span>
-                        <span class="text-2xl" x-text="p"></span>
-                    </button>
-                    <button @click="d = d > 1 ? d-1 : 10" class="glass h-32 flex flex-col items-center justify-center">
-                        <span class="text-[10px] mb-2">DIGITAL</span>
-                        <span class="text-2xl" x-text="d"></span>
-                    </button>
-                </div>
-                <div class="glass p-6 rounded-2xl border-white/20 text-center">
-                    <p class="text-[10px] mb-2 opacity-50 uppercase">Recommended_Action</p>
-                    <p class="text-lg font-bold" x-text="getAction(m, p, d)"></p>
-                </div>
-            </div>
-        </div>
-    </template>
+function logout() {
+    localStorage.removeItem("aiUser");
+    location.reload();
+}
 
-    <template x-if="view === 'tree'">
-        <div class="h-full p-6 flex flex-col" x-data="{ step: 1, q: '' }">
-            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
-            <div class="flex-grow space-y-6">
-                <input x-model="q" placeholder="The Problem..." class="w-full bg-transparent text-xl font-bold outline-none border-b border-white/10 pb-4">
-                <div class="space-y-4">
-                    <div class="glass p-6 rounded-2xl relative overflow-hidden">
-                        <div class="absolute left-0 top-0 h-full w-1 bg-white"></div>
-                        <p class="text-[10px] opacity-40 mb-2">IF I DO IT</p>
-                        <p class="text-sm">High short-term stress, but the loop closes. Growth occurs via discomfort.</p>
-                    </div>
-                    <div class="glass p-6 rounded-2xl relative overflow-hidden">
-                        <div class="absolute left-0 top-0 h-full w-1 bg-red-500"></div>
-                        <p class="text-[10px] opacity-40 mb-2">IF I DON'T</p>
-                        <p class="text-sm">Instant relief. Long-term decay of self-trust. The problem scales with time.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
+function predict() {
+    const input = document.getElementById("predictionInput").value.toLowerCase();
+    let output = "General Pattern Recognition Domain";
 
-    <template x-if="view === 'patterns'">
-        <div class="h-full p-6 flex flex-col">
-            <nav class="flex justify-between mb-8"><button @click="view = 'dash'" class="text-[10px] opacity-40">BACK_</button></nav>
-            <div class="space-y-4">
-                <div class="glass p-4 rounded-xl flex justify-between items-center">
-                    <p class="text-xs">Morning Scroll</p>
-                    <span class="text-red-500 text-[10px] font-bold">VULNERABILITY</span>
-                </div>
-                <div class="glass p-4 rounded-xl flex justify-between items-center">
-                    <p class="text-xs">Late Night Work</p>
-                    <span class="text-yellow-500 text-[10px] font-bold">DIMINISHING RETURN</span>
-                </div>
-                <div class="glass p-4 rounded-xl flex justify-between items-center border-white/30">
-                    <p class="text-xs">Physical Movement</p>
-                    <span class="text-green-500 text-[10px] font-bold">CORE CATALYST</span>
-                </div>
-                <div class="p-8 text-center opacity-20 text-[10px] tracking-widest uppercase">
-                    Syncing with habits...
-                </div>
-            </div>
-        </div>
-    </template>
+    if (input.includes("stock") || input.includes("bitcoin"))
+        output = "Finance / Time Series Prediction";
+    else if (input.includes("image") || input.includes("cat"))
+        output = "Computer Vision Domain";
+    else if (input.includes("chat") || input.includes("text"))
+        output = "Natural Language Processing";
 
-    <script>
-        function app() {
-            return {
-                view: 'auth',
-                user: { name: localStorage.getItem('oddly_name') || '' },
-                uptime: '00:00:00',
-                init() {
-                    setInterval(() => {
-                        const now = new Date();
-                        this.uptime = now.toTimeString().split(' ')[0];
-                    }, 1000);
-                    if(this.user.name) this.view = 'dash';
-                },
-                login() {
-                    if(this.user.name) {
-                        localStorage.setItem('oddly_name', this.user.name);
-                        this.view = 'dash';
-                    }
-                },
-                getPrediction(m, d, s) {
-                    if (d > 80) return "Global Elite. High isolation, peak performance.";
-                    if (m > 70 && s > 70) return "The Charismatic Founder. Wealthy but chaotic.";
-                    if (d < 30) return "The Digital Ghost. Lost in the scroll.";
-                    return "Standard Trajectory. Regret likelihood: 40%.";
-                },
-                getAction(m, p, d) {
-                    if (m > 8) return "Leave your phone in a drawer for 2 hours.";
-                    if (p < 4) return "15 minutes of zone-2 cardio now.";
-                    if (d > 7) return "Unsubscribe from 5 emails immediately.";
-                    return "Stare at a wall for 3 minutes. No music.";
-                },
-                loadEmoji() {
-                    return "● ● ○ ○ ○";
-                }
-            }
+    document.getElementById("predictionOutput").innerText = "AI Classification: " + output;
+}
+
+function trainAI() {
+    const progress = document.getElementById("progress");
+    const status = document.getElementById("trainingStatus");
+    let width = 0;
+    status.innerText = "Initializing training...";
+
+    const interval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(interval);
+            status.innerText = "Training Complete. Accuracy: 94.7%";
+        } else {
+            width++;
+            progress.style.width = width + "%";
+            status.innerText = "Training... " + width + "%";
         }
-    </script>
+    }, 40);
+}
+
+</script>
+
 </body>
-                      </html>
-                      
+</html>
