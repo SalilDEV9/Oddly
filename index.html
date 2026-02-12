@@ -29,21 +29,37 @@
             overflow: hidden;
         }
 
-        /* --- 2. HEADER --- */
+        /* --- 2. HEADER & DEV SIGNATURE --- */
         header {
-            height: 60px;
+            height: 70px;
             padding: 0 20px;
             background: var(--glass);
             border-bottom: 1px solid var(--glass-border);
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            justify-content: center;
             flex-shrink: 0;
             z-index: 1000;
         }
 
+        .dev-top {
+            font-size: 0.65rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            text-align: left;
+        }
+        .dev-top span { color: var(--neon-blue); font-weight: bold; }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .brand { 
-            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.3rem;
             background: linear-gradient(90deg, #fff, var(--neon-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -64,12 +80,12 @@
             background: transparent;
             border: none;
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-family: 'Outfit', sans-serif;
         }
 
         button.icon-btn {
-            background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: #aaa;
+            background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: #aaa;
         }
 
         /* --- 3. MAIN LAYOUT --- */
@@ -100,44 +116,42 @@
             position: relative;
         }
         
-        /* The actual iframe holder */
         #player-embed { width: 100%; height: 100%; }
 
         /* CONTROLS */
         .controls-bar {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
             padding: 10px;
         }
 
         .action-btn {
-            padding: 10px 18px;
+            padding: 10px 14px;
             border-radius: 6px;
             border: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.05);
             color: white;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             letter-spacing: 1px;
             cursor: pointer;
             transition: 0.2s;
+            display: flex; align-items: center; gap: 5px;
         }
         .action-btn:active { background: var(--neon-blue); color: #000; }
 
-        #stealth-btn { border-color: var(--neon-blue); background: rgba(0, 242, 234, 0.1); }
-        #reset-btn { border-color: var(--neon-pink); color: var(--neon-pink); }
-
-        .dev-badge {
-            position: absolute; bottom: 10px; right: 15px;
-            font-size: 0.7rem; color: #555; pointer-events: none;
-        }
+        #full-btn { border-color: #fff; }
+        #mute-btn { border-color: #ff9900; color: #ff9900; }
+        #mute-btn.active { background: #ff9900; color: #000; }
+        #skip-btn { border-color: var(--neon-pink); color: var(--neon-pink); }
+        #stealth-btn { border-color: var(--neon-blue); }
 
         /* --- 4. SIDEBAR --- */
         #sidebar {
-            width: 350px;
+            width: 320px;
             background: #080808;
             border-left: 1px solid var(--glass-border);
             display: flex;
@@ -148,7 +162,7 @@
 
         .sidebar-header {
             padding: 15px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #888;
             text-transform: uppercase;
             border-bottom: 1px solid #222;
@@ -161,7 +175,7 @@
             overflow-y: auto;
             padding: 10px;
         }
-        #queue::-webkit-scrollbar { width: 8px; }
+        #queue::-webkit-scrollbar { width: 6px; }
         #queue::-webkit-scrollbar-track { background: #000; }
         #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
@@ -178,29 +192,26 @@
         .queue-item:hover { background: #1a1a1a; }
         .queue-item.active { background: rgba(0, 242, 234, 0.08); border-color: var(--neon-blue); }
 
-        .queue-item img { width: 90px; height: 50px; object-fit: cover; border-radius: 4px; background: #222; }
+        .queue-item img { width: 80px; height: 45px; object-fit: cover; border-radius: 4px; background: #222; }
         .queue-item .meta { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        .queue-item .title { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .queue-item .artist { font-size: 0.75rem; color: #777; }
+        .queue-item .title { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item .artist { font-size: 0.7rem; color: #777; }
 
         @media (max-width: 900px) {
             main { flex-direction: column; }
-            #stage { height: 40vh; flex: none; }
-            #sidebar { width: 100%; height: 60vh; flex: none; }
-            .controls-bar { margin-top: 10px; }
-            #player-container { width: 100%; height: 100%; max-width: none; }
+            #stage { height: 45vh; flex: none; }
+            #sidebar { width: 100%; height: 55vh; flex: none; }
+            .controls-bar { margin-top: 5px; padding: 5px; }
         }
 
         /* --- 5. EXTRAS --- */
         #lyrics-panel {
-            position: absolute; top: 0; right: 0; bottom: 0; width: 350px;
+            position: absolute; top: 0; right: 0; bottom: 0; width: 320px;
             background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink);
             transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto;
         }
         #lyrics-panel.show { transform: translateX(0); }
-        @media (max-width: 900px) { #lyrics-panel { width: 100%; } }
 
-        /* STEALTH OVERLAY */
         #stealth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: black; z-index: 9999; display: none;
@@ -214,16 +225,18 @@
         body.cinema-mode #sidebar { display: none; }
         body.cinema-mode header { display: none; }
         body.cinema-mode #stage { height: 100vh; }
-        body.cinema-mode .dev-badge { display: none; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">TITAN MAX</div>
-        <div class="search-bar">
-            <input type="text" id="query" placeholder="Search song..." value="Arijit Singh Audio">
-            <button class="icon-btn" id="search-btn">🔍</button>
+        <div class="dev-top">Engineered by <span>Salil</span></div>
+        <div class="header-main">
+            <div class="brand">TITAN MAX</div>
+            <div class="search-bar">
+                <input type="text" id="query" placeholder="Command song..." value="Arijit Singh Audio">
+                <button class="icon-btn" id="search-btn">🔍</button>
+            </div>
         </div>
     </header>
 
@@ -234,19 +247,19 @@
             </div>
             
             <div class="controls-bar">
-                <button class="action-btn" id="cinema-btn">Cinema</button>
-                <button class="action-btn" id="lyrics-btn">Lyrics</button>
+                <button class="action-btn" id="full-btn">⛶ FULLSCREEN</button>
+                <button class="action-btn" id="mute-btn">🔇 MUTE AD</button>
+                <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
-                <button class="action-btn" id="reset-btn">⚡ RESET PLAYER</button>
+                <button class="action-btn" id="cinema-btn">CINEMA</button>
+                <button class="action-btn" id="lyrics-btn">LYRICS</button>
             </div>
-
-            <div class="dev-badge">Architect: Salil</div>
         </section>
 
         <aside id="sidebar">
-            <div class="sidebar-header">Queue (25 Tracks)</div>
+            <div class="sidebar-header">Operational Queue</div>
             <div id="queue">
-                <div style="padding:20px; text-align:center; color:#555;">System Ready.</div>
+                <div style="padding:20px; text-align:center; color:#555;">Initializing...</div>
             </div>
         </aside>
 
@@ -270,64 +283,47 @@
         let state = { playlist: [], index: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
 
-        // Initialize Youtube
-        function onYouTubeIframeAPIReady() {
-            createPlayer();
-            // Start the system automatically
-            setTimeout(() => { if(window.performSearch) performSearch(); }, 1500);
-        }
+        function onYouTubeIframeAPIReady() { createPlayer(); }
 
-        // --- CORE PLAYER ENGINE ---
         function createPlayer() {
-            // Destroy existing if needed to clear bugs
-            if(player && player.destroy) { player.destroy(); }
-            
+            if(player && player.destroy) player.destroy();
             player = new YT.Player('player-embed', {
                 height: '100%', width: '100%',
-                // AD LOOP FIX: autoplay=0 initially to prevent race conditions
                 playerVars: { 'autoplay': 0, 'controls': 1, 'playsinline': 1, 'rel': 0, 'iv_load_policy': 3 },
-                events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
         }
 
-        // --- SEARCH ENGINE ---
+        function onPlayerReady() {
+            performSearch();
+        }
+
         async function performSearch() {
             const q = document.getElementById('query').value.trim();
             if(!q) return;
-            
             const queueDiv = document.getElementById('queue');
             queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Scanning...</div>';
             
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                const res = await fetch(url, { signal: controller.signal });
-                clearTimeout(timeoutId);
+                const res = await fetch(url);
                 const data = await res.json();
-                
                 if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
-                    // Initialize audio handshake
-                    playGhost();
+                    ghostAudio.play().catch(e => {});
                 } else {
-                    queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
+                    queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No results.</div>';
                 }
-            } catch(e) { queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#ff4444;">Connection Error.</div>'; }
+            } catch(e) { queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">Error.</div>'; }
         }
 
         function loadVideo(i) {
             state.index = i;
             const item = state.playlist[i];
-            
-            // AD LOOP FIX: Load, wait 500ms, then Play. This stabilizes the state.
-            if(player && player.loadVideoById) {
-                player.loadVideoById(item.id.videoId);
-            }
-            
+            if(player && player.loadVideoById) player.loadVideoById(item.id.videoId);
             renderQueue();
             if(item.snippet) fetchLyrics(item.snippet.title, item.snippet.channelTitle);
             updateMediaSession(item);
@@ -335,34 +331,14 @@
 
         function updateMediaSession(item) {
             if('mediaSession' in navigator && item.snippet) {
-                const artworkSrc = (item.snippet.thumbnails.high) ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.medium.url;
-                
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: item.snippet.title, artist: item.snippet.channelTitle,
-                    artwork: [{ src: artworkSrc }]
+                    artwork: [{ src: item.snippet.thumbnails.medium.url }]
                 });
-
-                // SPOTIFY-CLASS CONTROLS
-                navigator.mediaSession.setActionHandler('play', () => { 
-                    player.playVideo(); 
-                    playGhost(); 
-                });
-                navigator.mediaSession.setActionHandler('pause', () => { 
-                    player.pauseVideo(); 
-                    pauseGhost(); 
-                });
+                navigator.mediaSession.setActionHandler('play', () => { player.playVideo(); ghostAudio.play(); });
+                navigator.mediaSession.setActionHandler('pause', () => { player.pauseVideo(); ghostAudio.pause(); });
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
-                navigator.mediaSession.setActionHandler('previoustrack', () => { if(state.index>0) loadVideo(state.index-1); });
             }
-        }
-
-        // --- GHOST AUDIO SYNC (CRITICAL FOR BACKGROUND) ---
-        function playGhost() {
-            // We only play ghost audio if user interacted
-            ghostAudio.play().catch(e => console.log("Audio handshake pending..."));
-        }
-        function pauseGhost() {
-            ghostAudio.pause();
         }
 
         function renderQueue() {
@@ -378,82 +354,68 @@
         }
 
         function onPlayerStateChange(e) {
-            // State 1 = Playing
-            if (e.data === 1) playGhost(); 
-            // State 2 = Paused
-            if (e.data === 2) pauseGhost();
-            // State 0 = Ended
-            if (e.data === 0) nextVideo();
+            if (e.data === 1) ghostAudio.play().catch(e=>{}); 
+            if (e.data === 2) ghostAudio.pause(); 
+            if (e.data === 0) nextVideo(); 
         }
 
         function nextVideo() { if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); }
 
-        /* --- LYRICS LOGIC --- */
         async function fetchLyrics(title, channelName) {
             const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Analyzing Metadata...";
-            if(!title) return;
-            let cleanTitle = title.toLowerCase()
-                .replace(/\(.*\)/g, "") .replace(/\[.*\]/g, "") 
-                .replace(/official video|lyric video|official audio|audio|hq|hd|4k/g, "")
-                .replace(/ft\.|feat\.|starring|from/g, "").replace(/[|:;"]/g, "").trim();
-            let artist = "", song = "";
-            let cleanChannel = channelName ? channelName.replace("VEVO", "").trim() : "";
+            panel.innerText = "Cleaning Data...";
+            let cleanTitle = title.toLowerCase().replace(/\(.*\)|\[.*\]/g, "").replace(/official video|audio/g, "").trim();
+            let artist = channelName ? channelName.replace("VEVO", "").trim() : "";
+            let song = cleanTitle;
             if (cleanTitle.includes("-")) {
                 let parts = cleanTitle.split("-");
                 artist = parts[0].trim(); song = parts[1].trim();
-            } else {
-                artist = cleanChannel; song = cleanTitle;
             }
             try {
                 let res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
                 let data = await res.json();
-                if(data.lyrics) { panel.innerText = data.lyrics; } 
-                else {
-                    if (cleanTitle.includes("-")) {
-                         let parts = cleanTitle.split("-");
-                         let res2 = await fetch(`https://api.lyrics.ovh/v1/${parts[1].trim()}/${parts[0].trim()}`);
-                         let data2 = await res2.json();
-                         if(data2.lyrics) { panel.innerText = data2.lyrics; return; }
-                    }
-                    panel.innerText = `Lyrics not found for:\n"${song}"\n(Try manual search)`;
-                }
+                panel.innerText = data.lyrics || "Lyrics not found.";
             } catch(e) { panel.innerText = "Lyrics unavailable."; }
         }
 
-        /* --- UI LOGIC & RESET BUTTON --- */
         window.onload = () => {
-            window.performSearch = performSearch;
             document.getElementById('search-btn').onclick = performSearch;
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
 
-            // NUKE BUTTON: Rebuilds the player without refreshing
-            document.getElementById('reset-btn').onclick = () => {
-                // Re-inject the div
+            document.getElementById('skip-btn').onclick = () => {
                 document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>';
                 createPlayer();
-                // Resume current song
                 setTimeout(() => loadVideo(state.index), 1000);
             };
 
-            // STEALTH MODE
+            const muteBtn = document.getElementById('mute-btn');
+            muteBtn.onclick = () => {
+                if(player.isMuted()) {
+                    player.unMute(); muteBtn.classList.remove('active'); muteBtn.innerText = "🔇 MUTE AD";
+                } else {
+                    player.mute(); muteBtn.classList.add('active'); muteBtn.innerText = "🔊 UNMUTE";
+                }
+            };
+
+            document.getElementById('full-btn').onclick = () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            };
+
             const stealthOverlay = document.getElementById('stealth-overlay');
-            const hint = document.querySelector('.stealth-hint');
             document.getElementById('stealth-btn').onclick = async () => {
                 stealthOverlay.classList.add('active');
-                hint.style.animation = 'none'; hint.offsetHeight; hint.style.animation = 'fadeOut 4s forwards'; 
-                try { if(navigator.wakeLock) await navigator.wakeLock.request('screen'); } catch(e){}
-                try { if(navigator.vibrate) navigator.vibrate(50); } catch(e){}
+                if(navigator.wakeLock) await navigator.wakeLock.request('screen');
             };
             let lastTap = 0;
             stealthOverlay.addEventListener('click', (e) => {
                 const currentTime = new Date().getTime();
-                if (currentTime - lastTap < 400 && currentTime - lastTap > 0) {
-                    stealthOverlay.classList.remove('active');
-                    try { if(navigator.vibrate) navigator.vibrate([50, 50]); } catch(e){}
-                }
+                if (currentTime - lastTap < 400 && currentTime - lastTap > 0) stealthOverlay.classList.remove('active');
                 lastTap = currentTime;
             });
         };
