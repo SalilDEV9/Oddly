@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
     <title>TITAN MAX | Salil</title>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
@@ -70,13 +67,6 @@
         
         #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 350px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
         #lyrics-panel.show { transform: translateX(0); }
-        
-        #sys-status {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 20px;
-            background: #000; color: #333; font-size: 0.6rem; 
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron'; z-index: 6000; pointer-events: none;
-        }
 
         @media (max-width: 900px) {
             main { flex-direction: column; }
@@ -120,39 +110,14 @@
     </main>
     
     <div id="stealth-overlay"><div class="stealth-hint">DOUBLE TAP TO WAKE</div></div>
-    <div id="sys-status">SYSTEM INITIALIZING...</div>
     <audio id="ghost-audio" loop playsinline style="display:none;"><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
-        // --- TRIPLE-CORE FAILOVER SYSTEM ---
-        const API_KEYS = [
-            'AIzaSyBLk_r10QZ2sMhn6JavyZNEZ8Wmu1TdWlA', // Priority 1
-            'AIzaSyBe5Ulhapgo3EjgMRb52qUDan-84a0RuUM', // Priority 2
-            'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'  // Priority 3
-        ];
+        // --- NEW KEY INJECTED ---
+        const API_KEY = 'AIzaSyBLSaRU_KnR2pwqZeEiZAhDDyzhBJ5q6do'; 
         
-        let currentKeyIndex = 0;
         let player, state = { playlist: [], index: 0, songTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
-
-        function getApiKey() {
-            const key = API_KEYS[currentKeyIndex];
-            document.getElementById('sys-status').innerText = `SYSTEM: ONLINE | CORE: ${currentKeyIndex + 1}/${API_KEYS.length}`;
-            return key;
-        }
-
-        function switchKey() {
-            currentKeyIndex++;
-            if(currentKeyIndex >= API_KEYS.length) {
-                currentKeyIndex = 0; // Loop or Fail? Let's Loop for now but show error
-                document.getElementById('sys-status').innerText = "SYSTEM CRITICAL: ALL KEYS FAILED. RETRYING...";
-                document.getElementById('sys-status').style.color = "red";
-                return false; 
-            }
-            console.log(`TITAN SYSTEM: Error detected. Switching to Key #${currentKeyIndex + 1}`);
-            document.getElementById('sys-status').innerText = `REROUTING POWER TO CORE ${currentKeyIndex + 1}...`;
-            return true;
-        }
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player-embed', {
@@ -172,26 +137,29 @@
             queueDiv.style.opacity = '0.5'; 
             
             try {
-                // Use dynamic key
-                const currentKey = getApiKey();
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${currentKey}`);
-                const data = await res.json();
+                // Using new key
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
                 
-                // --- AGGRESSIVE FAILOVER LOGIC ---
-                // If there is ANY error (400, 403, 404), or if data.error exists
-                if(data.error) {
-                    console.warn(`Key ${currentKeyIndex+1} Failed: ${data.error.message}`);
-                    if(switchKey()) {
-                        performSearch(); // Recursively retry with next key
-                        return;
-                    } else {
-                        queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#ff4444;">ALL API KEYS FAILED.<br><span style="font-size:0.7rem;">Check Google Cloud Settings for Referrer Restrictions.</span></div>';
-                        queueDiv.style.opacity = '1';
-                        return;
-                    }
-                }
-
+                const res = await fetch(url);
+                const data = await res.json();
                 queueDiv.style.opacity = '1'; 
+
+                // --- DIAGNOSTIC ERROR DISPLAY ---
+                if(data.error) {
+                    console.error(`Titan Error: ${data.error.code} - ${data.error.message}`);
+                    const reason = data.error.errors[0].reason;
+                    
+                    let helpMsg = "Unknown Error";
+                    if(data.error.code === 403) helpMsg = "ACCESS DENIED. Go to Google Cloud > Credentials > Key > Set 'Restrictions' to 'None'.";
+                    if(data.error.code === 400) helpMsg = "BAD REQUEST. The API Key is invalid or malformed.";
+
+                    queueDiv.innerHTML = `<div style="padding:20px;text-align:center;color:#ff4444;">
+                        ERROR ${data.error.code}<br>
+                        <span style="font-size:0.7rem;">${reason}</span><br><br>
+                        <span style="font-size:0.6rem;color:#ccc;border:1px solid #333;padding:5px;display:inline-block;">${helpMsg}</span>
+                    </div>`;
+                    return;
+                }
 
                 if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
@@ -199,12 +167,11 @@
                     renderQueue();
                     loadVideo(0);
                 } else {
-                    console.log("Titan Log: No results found."); 
+                    queueDiv.innerHTML = '<div style="padding:20px;text-align:center;">No results found.</div>';
                 }
             } catch(e) { 
-                // Network error? Try switching keys too, just in case
-                console.warn("Titan Network Error");
-                queueDiv.style.opacity = '1';
+                console.error("Network Error:", e);
+                queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:red;">Network Error. Check Internet.</div>';
             }
         }
 
