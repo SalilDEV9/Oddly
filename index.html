@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARBES HUB | Ultimate Edition</title>
+    <title>JARBES HUB | Fixed Input</title>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -26,7 +26,7 @@
             overflow: hidden;
         }
 
-        /* Header */
+        /* --- FIXED HEADER --- */
         header {
             padding: 15px 25px;
             background: rgba(30, 30, 30, 0.95);
@@ -35,21 +35,25 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 10;
+            
+            /* CRITICAL FIX: Z-Index only works with Position */
+            position: relative; 
+            z-index: 9999; 
         }
 
-        .brand { font-size: 1.4rem; font-weight: 700; letter-spacing: -1px; }
+        .brand { font-size: 1.4rem; font-weight: 700; letter-spacing: -1px; user-select: none; }
         .brand span { color: var(--accent); }
 
         .search-container {
             display: flex;
             width: 50%;
             max-width: 600px;
-            background: #121212;
+            background: #000; /* Solid Black for contrast */
             border: 1px solid #333;
             border-radius: 25px;
             overflow: hidden;
             transition: border-color 0.3s;
+            position: relative; /* Ensure input is clickable */
         }
 
         .search-container:focus-within { border-color: var(--accent); }
@@ -58,31 +62,32 @@
             flex: 1;
             background: transparent;
             border: none;
-            padding: 10px 15px;
-            color: white;
+            padding: 12px 20px;
+            color: white; /* Ensure text is white */
             font-size: 1rem;
             outline: none;
+            caret-color: var(--accent); /* Visible cursor */
         }
 
         button#search-btn {
             background: #2a2a2a;
             border: none;
             color: var(--text);
-            padding: 0 20px;
+            padding: 0 25px;
             cursor: pointer;
-            transition: background 0.2s;
+            border-left: 1px solid #333;
         }
 
         button#search-btn:hover { background: #333; }
 
-        /* Status Bar for Errors */
+        /* Status Bar */
         #status-bar {
             background: var(--error);
             color: white;
             text-align: center;
             padding: 10px;
             font-size: 0.9rem;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         /* Layout */
@@ -91,9 +96,10 @@
             grid-template-columns: 1fr 400px;
             flex: 1;
             overflow: hidden;
+            position: relative;
+            z-index: 1; /* Lower than header */
         }
 
-        /* Player Section */
         #player-wrapper {
             background: #000;
             display: flex;
@@ -107,9 +113,9 @@
             max-width: 1280px;
             aspect-ratio: 16/9;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            background: #000;
         }
 
-        /* Sidebar */
         #sidebar {
             background: var(--surface);
             border-left: 1px solid #333;
@@ -169,15 +175,15 @@
 
         .video-item .channel { font-size: 0.8rem; color: #aaa; }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
 
         @media (max-width: 900px) {
             main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
             #sidebar { border-left: none; border-top: 1px solid #333; }
+            header { flex-wrap: wrap; gap: 10px; }
+            .search-container { width: 100%; order: 2; }
+            .brand { width: 100%; text-align: center; margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -186,7 +192,7 @@
     <header>
         <div class="brand"><span>JARBES</span> HUB</div>
         <div class="search-container">
-            <input type="text" id="query" placeholder="Search for Arijit Singh, Lo-Fi, Coding...">
+            <input type="text" id="query" placeholder="Type here (e.g., Arijit Singh)..." autocomplete="off">
             <button id="search-btn">🔍</button>
         </div>
     </header>
@@ -202,33 +208,27 @@
             <div class="sidebar-header">Up Next</div>
             <div id="playlist-container">
                 <div style="text-align: center; color: #666; margin-top: 50px;">
-                    Search for a video to start the engine.
+                    Search for a video to start.
                 </div>
             </div>
         </aside>
     </main>
 
     <script>
-        // --- CONFIGURATION ---
+        // --- API CONFIG ---
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
         
-        // --- STATE ---
         let player;
-        let state = {
-            playlist: [],
-            currentIndex: 0
-        };
+        let state = { playlist: [], currentIndex: 0 };
 
-        // --- YOUTUBE API INIT ---
+        // Debug check to see if Input is detected
+        console.log("Input Element detected:", document.getElementById('query'));
+
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
-                playerVars: {
-                    'autoplay': 1,
-                    'modestbranding': 1,
-                    'rel': 0
-                },
+                playerVars: { 'autoplay': 1, 'modestbranding': 1, 'rel': 0 },
                 events: {
                     'onStateChange': onPlayerStateChange,
                     'onError': onPlayerError
@@ -236,58 +236,44 @@
             });
         }
 
-        // --- CORE FUNCTIONS ---
         async function performSearch() {
             const queryInput = document.getElementById('query');
             const query = queryInput.value.trim();
             const statusBar = document.getElementById('status-bar');
             
-            if (!query) return;
+            if (!query) {
+                alert("Please type something first, Sir.");
+                return;
+            }
 
-            // Clear previous errors
             statusBar.style.display = 'none';
 
-            // 1. Construct Broad Search URL (No strict filters)
-            // We append " audio" to help find playable versions if the user inputs just an artist name
-            const searchTerm = encodeURIComponent(query);
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${searchTerm}&type=video&key=${API_KEY}`;
+            // Use broad search
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
 
-                // 2. DIAGNOSTIC CHECK: Handle API Errors Explicitly
                 if (!response.ok) {
-                    const errorCode = data.error.code;
-                    const errorMessage = data.error.message;
-                    
-                    console.error("YouTube API Error:", data);
-                    
-                    statusBar.innerHTML = `⚠️ <strong>API Error (${errorCode}):</strong> ${errorMessage}`;
+                    statusBar.innerHTML = `⚠️ Error: ${data.error.message}`;
                     statusBar.style.display = 'block';
-                    
-                    if (errorCode === 403) {
-                        alert("Quota Exceeded or Key Restricted. Please check your Google Cloud Console.");
-                    }
                     return;
                 }
 
-                // 3. Handle Empty Results
                 if (!data.items || data.items.length === 0) {
-                    statusBar.innerHTML = `⚠️ No videos found for "<strong>${query}</strong>". Try a different term.`;
+                    statusBar.innerHTML = `⚠️ No results for "${query}"`;
                     statusBar.style.display = 'block';
                     return;
                 }
 
-                // 4. Success: Load Data
                 state.playlist = data.items;
                 state.currentIndex = 0;
                 renderPlaylist();
                 loadVideo(0);
 
             } catch (networkError) {
-                console.error("Network Error:", networkError);
-                statusBar.innerHTML = `⚠️ <strong>Network Error:</strong> Check your internet connection.`;
+                statusBar.innerHTML = `⚠️ Network Error. Check connection.`;
                 statusBar.style.display = 'block';
             }
         }
@@ -308,27 +294,21 @@
         function loadVideo(index) {
             state.currentIndex = index;
             const videoId = state.playlist[index].id.videoId;
-            player.loadVideoById(videoId);
+            if(player && player.loadVideoById) {
+                player.loadVideoById(videoId);
+            }
             renderPlaylist();
             
-            // Scroll to active item
             const activeItem = document.querySelector('.video-item.active');
-            if (activeItem) {
-                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
+            if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // --- AUTOMATION LOGIC ---
         function onPlayerStateChange(event) {
-            // YT.PlayerState.ENDED = 0
-            if (event.data === 0) {
-                playNext();
-            }
+            if (event.data === 0) playNext();
         }
 
         function onPlayerError(event) {
-            console.warn(`Video Playback Error (Code ${event.data}). Skipping...`);
-            // Error 150/101 = Restricted. Skip to next.
+            console.warn("Skipping restricted video...");
             playNext();
         }
 
@@ -338,11 +318,18 @@
             }
         }
 
-        // --- EVENT LISTENERS ---
-        document.getElementById('search-btn').addEventListener('click', performSearch);
-        document.getElementById('query').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
-        });
+        // Listener setup
+        const searchBtn = document.getElementById('search-btn');
+        const queryField = document.getElementById('query');
+
+        if(searchBtn) searchBtn.addEventListener('click', performSearch);
+        if(queryField) {
+            queryField.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+            // Force focus on load
+            queryField.focus();
+        }
 
     </script>
 </body>
