@@ -3,334 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARBES HUB | Fixed Input</title>
+    <title>JARBES TITAN | Salil</title>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
+        /* --- 1. DESIGN SYSTEM (Premium Glassmorphism) --- */
         :root {
-            --bg: #121212;
-            --surface: #1e1e1e;
-            --accent: #3ea6ff;
-            --text: #ffffff;
-            --error: #ff4e45;
+            --bg-deep: #050505;
+            --glass: rgba(30, 30, 30, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #00f2ea; /* Cyber Cyan */
+            --accent-glow: rgba(0, 242, 234, 0.4);
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
         }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0;
-            font-family: 'Roboto', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1a1a2e, var(--bg-deep));
+            color: var(--text-main);
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
             overflow: hidden;
         }
 
-        /* --- FIXED HEADER --- */
+        /* --- 2. HEADER --- */
         header {
             padding: 15px 25px;
-            background: rgba(30, 30, 30, 0.95);
-            border-bottom: 1px solid #333;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            
-            /* CRITICAL FIX: Z-Index only works with Position */
-            position: relative; 
-            z-index: 9999; 
+            gap: 20px;
+            position: relative;
+            z-index: 1000;
         }
 
-        .brand { font-size: 1.4rem; font-weight: 700; letter-spacing: -1px; user-select: none; }
-        .brand span { color: var(--accent); }
+        .brand { 
+            font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; 
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            user-select: none;
+        }
 
-        .search-container {
-            display: flex;
-            width: 50%;
+        .search-bar {
+            flex: 1;
             max-width: 600px;
-            background: #000; /* Solid Black for contrast */
-            border: 1px solid #333;
-            border-radius: 25px;
-            overflow: hidden;
-            transition: border-color 0.3s;
-            position: relative; /* Ensure input is clickable */
+            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+            position: relative;
         }
 
-        .search-container:focus-within { border-color: var(--accent); }
+        .search-bar:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
 
         input {
-            flex: 1;
+            width: 100%;
             background: transparent;
             border: none;
-            padding: 12px 20px;
-            color: white; /* Ensure text is white */
-            font-size: 1rem;
-            outline: none;
-            caret-color: var(--accent); /* Visible cursor */
-        }
-
-        button#search-btn {
-            background: #2a2a2a;
-            border: none;
-            color: var(--text);
-            padding: 0 25px;
-            cursor: pointer;
-            border-left: 1px solid #333;
-        }
-
-        button#search-btn:hover { background: #333; }
-
-        /* Status Bar */
-        #status-bar {
-            background: var(--error);
+            padding: 12px 15px;
             color: white;
-            text-align: center;
-            padding: 10px;
-            font-size: 0.9rem;
-            display: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
         }
 
-        /* Layout */
+        button.icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 0 15px;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+        button.icon-btn:hover { color: var(--accent); }
+
+        /* --- 3. MAIN LAYOUT --- */
         main {
-            display: grid;
-            grid-template-columns: 1fr 400px;
+            display: flex;
             flex: 1;
             overflow: hidden;
             position: relative;
-            z-index: 1; /* Lower than header */
+            z-index: 1;
         }
 
-        #player-wrapper {
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        #player {
-            width: 100%;
-            max-width: 1280px;
-            aspect-ratio: 16/9;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            background: #000;
-        }
-
-        #sidebar {
-            background: var(--surface);
-            border-left: 1px solid #333;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .sidebar-header {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            color: #aaa;
-            margin-bottom: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .video-item {
-            display: flex;
-            gap: 12px;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .video-item:hover { background: #2a2a2a; }
-        .video-item.active { 
-            background: rgba(62, 166, 255, 0.15); 
-            border: 1px solid rgba(62, 166, 255, 0.3);
-        }
-
-        .video-item img {
-            width: 120px;
-            height: 68px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .video-item .info {
+        /* Player Section */
+        #stage {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            overflow: hidden;
+            align-items: center;
+            background: #000;
+            position: relative;
+            transition: all 0.5s ease;
         }
 
-        .video-item .title {
+        #player-wrapper {
+            width: 90%;
+            max-width: 1100px;
+            aspect-ratio: 16/9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            border: 1px solid var(--glass-border);
+            transition: 0.5s;
+        }
+
+        /* Controls Bar (Under Video) */
+        .controls-bar {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            color: white;
+            cursor: pointer;
             font-size: 0.9rem;
-            font-weight: 500;
-            line-height: 1.2;
-            margin-bottom: 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
         }
 
-        .video-item .channel { font-size: 0.8rem; color: #aaa; }
+        .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        .action-btn.active { background: var(--accent); color: #000; font-weight: bold; box-shadow: 0 0 15px var(--accent-glow); }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        /* DEVELOPER BADGE (NEW) */
+        .dev-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.6);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+            user-select: none;
+            z-index: 5;
+        }
+        .dev-badge span { color: var(--accent); font-weight: bold; }
 
-        @media (max-width: 900px) {
-            main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-            #sidebar { border-left: none; border-top: 1px solid #333; }
-            header { flex-wrap: wrap; gap: 10px; }
-            .search-container { width: 100%; order: 2; }
-            .brand { width: 100%; text-align: center; margin-bottom: 5px; }
+        /* Sidebar (Playlist) */
+        #sidebar {
+            width: 350px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s ease;
+            z-index: 10;
+        }
+
+        .queue-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .queue-item:hover { background: rgba(255,255,255,0.05); }
+        .queue-item.active { background: rgba(0, 242, 234, 0.1); border-left: 3px solid var(--accent); }
+        
+        .queue-item img { width: 100px; height: 56px; object-fit: cover; border-radius: 6px; }
+        .queue-item .meta { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        .queue-item .title { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item .artist { font-size: 0.75rem; color: var(--text-dim); }
+
+        /* --- 4. LYRICS OVERLAY --- */
+        #lyrics-panel {
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 350px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--glass-border);
+            padding: 30px;
+            overflow-y: auto;
+            transform: translateX(100%); /* Hidden by default */
+            transition: transform 0.4s ease;
+            z-index: 20;
+        }
+
+        #lyrics-panel.show { transform: translateX(0); }
+        
+        .lyrics-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #ddd;
+            text-align: center;
+        }
+
+        /* --- 5. CINEMA MODE STATES --- */
+        body.cinema-mode #sidebar { transform: translateX(100%); width: 0; display: none; }
+        body.cinema-mode #stage { width: 100vw; }
+        body.cinema-mode #player-wrapper { width: 100%; height: 100%; max-width: none; border-radius: 0; border: none; }
+        body.cinema-mode header { display: none; } /* Immersion */
+        body.cinema-mode .dev-badge { display: none; }
+        body.cinema-mode .controls-bar { position: absolute; bottom: 30px; z-index: 50; opacity: 0; transition: opacity 0.3s; }
+        body.cinema-mode #stage:hover .controls-bar { opacity: 1; }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            main { flex-direction: column; }
+            #sidebar { width: 100%; height: 40%; }
+            #lyrics-panel { width: 100%; transform: translateY(100%); }
+            #lyrics-panel.show { transform: translateY(0); }
+            .dev-badge { display: none; } /* Hide on mobile to save space */
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand"><span>JARBES</span> HUB</div>
-        <div class="search-container">
-            <input type="text" id="query" placeholder="Type here (e.g., Arijit Singh)..." autocomplete="off">
-            <button id="search-btn">🔍</button>
+        <div class="brand">JARBES <span>TITAN</span></div>
+        <div class="search-bar">
+            <input type="text" id="query" placeholder="Search Song..." value="Arijit Singh">
+            <button class="icon-btn" id="search-btn">🔍</button>
         </div>
     </header>
 
-    <div id="status-bar"></div>
-
     <main>
-        <section id="player-wrapper">
-            <div id="player"></div>
+        <section id="stage">
+            <div id="player-wrapper">
+                <div id="player"></div>
+            </div>
+
+            <div class="controls-bar">
+                <button class="action-btn" id="cinema-btn">
+                    <span>🔲</span> Cinema Mode
+                </button>
+                <button class="action-btn" id="lyrics-btn">
+                    <span>🎤</span> Lyrics
+                </button>
+                <button class="action-btn" onclick="document.body.requestFullscreen()">
+                    <span>⛶</span> Fullscreen
+                </button>
+            </div>
+            
+            <div class="dev-badge">Engineered by <span>Salil</span></div>
         </section>
 
+        <aside id="lyrics-panel">
+            <h3 style="color:var(--accent); text-align:center; margin-top:0;">LYRICS</h3>
+            <div id="lyrics-text" class="lyrics-content">Searching...</div>
+        </aside>
+
         <aside id="sidebar">
-            <div class="sidebar-header">Up Next</div>
-            <div id="playlist-container">
-                <div style="text-align: center; color: #666; margin-top: 50px;">
-                    Search for a video to start.
-                </div>
-            </div>
+            <div style="padding:15px; font-weight:bold; color:var(--text-dim); border-bottom:1px solid #333;">NEXT UP</div>
+            <div id="queue"></div>
         </aside>
     </main>
 
     <script>
-        // --- API CONFIG ---
+        console.log("%c System Architect: Salil ", "background: #00f2ea; color: #000; font-weight: bold; padding: 5px; border-radius: 4px;");
+
+        // --- CONFIG ---
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
         
+        // --- STATE ---
         let player;
-        let state = { playlist: [], currentIndex: 0 };
+        let state = {
+            playlist: [],
+            index: 0,
+            lyricsOpen: false,
+            cinemaMode: false
+        };
 
-        // Debug check to see if Input is detected
-        console.log("Input Element detected:", document.getElementById('query'));
-
+        // --- YOUTUBE INIT ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                playerVars: { 'autoplay': 1, 'modestbranding': 1, 'rel': 0 },
-                events: {
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
+                height: '100%', width: '100%',
+                playerVars: { 'autoplay': 1, 'controls': 1, 'modestbranding': 1, 'rel': 0, 'playsinline': 1 },
+                events: { 'onStateChange': onPlayerStateChange, 'onError': onPlayerError }
             });
+            setTimeout(() => performSearch(), 1000); // Auto-start
         }
 
+        // --- SEARCH ENGINE ---
         async function performSearch() {
             const queryInput = document.getElementById('query');
             const query = queryInput.value.trim();
-            const statusBar = document.getElementById('status-bar');
-            
-            if (!query) {
-                alert("Please type something first, Sir.");
-                return;
-            }
+            if(!query) return;
 
-            statusBar.style.display = 'none';
-
-            // Use broad search
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query + " audio")}&type=video&key=${API_KEY}`;
 
             try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    statusBar.innerHTML = `⚠️ Error: ${data.error.message}`;
-                    statusBar.style.display = 'block';
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if(data.error) {
+                    alert("API Error: " + data.error.message);
                     return;
                 }
 
-                if (!data.items || data.items.length === 0) {
-                    statusBar.innerHTML = `⚠️ No results for "${query}"`;
-                    statusBar.style.display = 'block';
-                    return;
+                if(data.items) {
+                    state.playlist = data.items;
+                    state.index = 0;
+                    renderQueue();
+                    loadVideo(0);
                 }
-
-                state.playlist = data.items;
-                state.currentIndex = 0;
-                renderPlaylist();
-                loadVideo(0);
-
-            } catch (networkError) {
-                statusBar.innerHTML = `⚠️ Network Error. Check connection.`;
-                statusBar.style.display = 'block';
-            }
+            } catch(e) { console.log(e); }
         }
 
-        function renderPlaylist() {
-            const container = document.getElementById('playlist-container');
-            container.innerHTML = state.playlist.map((video, index) => `
-                <div class="video-item ${index === state.currentIndex ? 'active' : ''}" onclick="loadVideo(${index})">
-                    <img src="${video.snippet.thumbnails.medium.url}" loading="lazy">
-                    <div class="info">
-                        <div class="title">${video.snippet.title}</div>
-                        <div class="channel">${video.snippet.channelTitle}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function loadVideo(index) {
-            state.currentIndex = index;
-            const videoId = state.playlist[index].id.videoId;
+        // --- CORE PLAYER LOGIC ---
+        function loadVideo(i) {
+            state.index = i;
+            const video = state.playlist[i];
+            const videoId = video.id.videoId;
+            
             if(player && player.loadVideoById) {
                 player.loadVideoById(videoId);
             }
-            renderPlaylist();
+            renderQueue();
             
-            const activeItem = document.querySelector('.video-item.active');
-            if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+            fetchLyrics(video.snippet.title);
 
-        function onPlayerStateChange(event) {
-            if (event.data === 0) playNext();
-        }
-
-        function onPlayerError(event) {
-            console.warn("Skipping restricted video...");
-            playNext();
-        }
-
-        function playNext() {
-            if (state.currentIndex < state.playlist.length - 1) {
-                loadVideo(state.currentIndex + 1);
+            // Media Session API for Background Play
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: video.snippet.title,
+                    artist: video.snippet.channelTitle,
+                    artwork: [{ src: video.snippet.thumbnails.high.url, sizes: '480x360', type: 'image/jpeg' }]
+                });
+                
+                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
+                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+                navigator.mediaSession.setActionHandler('previoustrack', () => loadVideo(state.index - 1));
+                navigator.mediaSession.setActionHandler('nexttrack', () => loadVideo(state.index + 1));
             }
         }
 
-        // Listener setup
-        const searchBtn = document.getElementById('search-btn');
-        const queryField = document.getElementById('query');
-
-        if(searchBtn) searchBtn.addEventListener('click', performSearch);
-        if(queryField) {
-            queryField.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') performSearch();
-            });
-            // Force focus on load
-            queryField.focus();
+        function renderQueue() {
+            const list = document.getElementById('queue');
+            list.innerHTML = state.playlist.map((v, i) => `
+                <div class="queue-item ${i === state.index ? 'active' : ''}" onclick="loadVideo(${i})">
+                    <img src="${v.snippet.thumbnails.default.url}">
+                    <div class="meta">
+                        <div class="title">${v.snippet.title}</div>
+                        <div class="artist">${v.snippet.channelTitle}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            const active = document.querySelector('.queue-item.active');
+            if(active) active.scrollIntoView({behavior: 'smooth', block: 'nearest'});
         }
 
+        function onPlayerStateChange(e) {
+            if (e.data === 0) nextVideo(); // Ended
+        }
+        function onPlayerError() { nextVideo(); } // Skip restricted
+        function nextVideo() { 
+            if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); 
+        }
+
+        // --- LYRICS ENGINE ---
+        async function fetchLyrics(rawTitle) {
+            const panel = document.getElementById('lyrics-text');
+            panel.innerText = "Searching lyrics...";
+            const parts = rawTitle.split('-');
+            let artist = parts[0] ? parts[0].trim() : "";
+            let song = parts[1] ? parts[1].replace(/\(.*\)/g, "").trim() : rawTitle; 
+
+            try {
+                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
+                const data = await res.json();
+                if(data.lyrics) {
+                    panel.innerText = data.lyrics;
+                } else {
+                    panel.innerText = "Lyrics not found for this track.";
+                }
+            } catch(e) { panel.innerText = "Lyrics unavailable."; }
+        }
+
+        // --- UI TOGGLES ---
+        document.getElementById('search-btn').onclick = performSearch;
+        document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
+
+        document.getElementById('lyrics-btn').onclick = () => {
+            state.lyricsOpen = !state.lyricsOpen;
+            const panel = document.getElementById('lyrics-panel');
+            const btn = document.getElementById('lyrics-btn');
+            
+            if(state.lyricsOpen) {
+                panel.classList.add('show');
+                btn.classList.add('active');
+            } else {
+                panel.classList.remove('show');
+                btn.classList.remove('active');
+            }
+        };
+
+        document.getElementById('cinema-btn').onclick = () => {
+            state.cinemaMode = !state.cinemaMode;
+            const btn = document.getElementById('cinema-btn');
+            
+            if(state.cinemaMode) {
+                document.body.classList.add('cinema-mode');
+                btn.classList.add('active');
+                btn.innerText = "❌ Exit";
+            } else {
+                document.body.classList.remove('cinema-mode');
+                btn.classList.remove('active');
+                btn.innerHTML = "<span>🔲</span> Cinema Mode";
+            }
+        };
     </script>
 </body>
 </html>
