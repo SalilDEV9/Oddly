@@ -1,239 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Command Center | Salil</title>
+<title>AI Video Hub | Salil</title>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0b0f1a;
+    color:white;
 }
-
-body {
-    height: 100vh;
-    overflow: hidden;
-    color: white;
+header{
+    padding:15px;
+    text-align:center;
+    background:#111827;
 }
-
-/* Animated Gradient Background */
-body {
-    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #6a11cb, #2575fc);
-    background-size: 400% 400%;
-    animation: gradientMove 12s ease infinite;
+input{
+    width:50%;
+    padding:10px;
+    border-radius:5px;
+    border:none;
 }
-
-@keyframes gradientMove {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:5px;
+    background:#ff0033;
+    color:white;
+    cursor:pointer;
 }
-
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    backdrop-filter: blur(10px);
+.main{
+    display:flex;
+    padding:20px;
 }
-
-.card {
-    background: rgba(0,0,0,0.6);
-    padding: 40px;
-    border-radius: 20px;
-    width: 360px;
-    text-align: center;
-    box-shadow: 0 0 40px rgba(0,0,0,0.4);
-    animation: fadeIn 1.2s ease;
+#player{
+    flex:3;
 }
-
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
+.sidebar{
+    flex:1;
+    margin-left:20px;
+    max-height:80vh;
+    overflow-y:auto;
 }
-
-.dev-name {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    opacity: 0.8;
+.video-item{
+    display:flex;
+    margin-bottom:10px;
+    cursor:pointer;
+    background:#1a1f2e;
+    padding:5px;
+    border-radius:5px;
 }
-
-input {
-    width: 100%;
-    padding: 12px;
-    margin: 15px 0;
-    border-radius: 10px;
-    border: none;
-    outline: none;
+.video-item img{
+    width:120px;
+    border-radius:5px;
 }
-
-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(45deg, #ff416c, #ff4b2b);
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 10px;
+.video-info{
+    padding-left:10px;
+    font-size:14px;
 }
-
-button:hover {
-    transform: scale(1.05);
+.controls{
+    text-align:center;
+    margin-top:10px;
 }
-
-.hidden {
-    display: none;
-}
-
-.dashboard {
-    padding: 40px;
-    overflow-y: auto;
-    height: 100vh;
-}
-
-.header {
-    margin-bottom: 20px;
-}
-
-.logout {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
-.section {
-    margin: 30px 0;
-    background: rgba(0,0,0,0.6);
-    padding: 20px;
-    border-radius: 15px;
-    animation: fadeIn 1s ease;
-}
-
-.progress-bar {
-    height: 20px;
-    background: #444;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-.progress {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #00c6ff, #0072ff);
+.controls button{
+    margin:5px;
+    background:#1f2937;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container" id="loginScreen">
-    <div class="card">
-        <h2>AI System Access</h2>
-        <input type="text" id="username" placeholder="Enter your name">
-        <button onclick="login()">Access Dashboard</button>
-        <div class="dev-name">
-            Developed by <strong>Salil</strong><br>
-            AI Engineer & Developer
-        </div>
-    </div>
+<header>
+<h2>🤖 AI Video Hub — Developed by Salil</h2>
+<input id="searchInput" placeholder="Search videos...">
+<button onclick="searchVideos()">Search</button>
+</header>
+
+<div class="main">
+<div>
+<div id="player"></div>
+
+<div class="controls">
+<button onclick="player.playVideo()">▶ Play</button>
+<button onclick="player.pauseVideo()">⏸ Pause</button>
+<button onclick="player.seekTo(player.getCurrentTime()-10)">⏪ -10s</button>
+<button onclick="player.seekTo(player.getCurrentTime()+10)">⏩ +10s</button>
+</div>
 </div>
 
-<div class="dashboard hidden" id="dashboard">
-    <button class="logout" onclick="logout()">Logout</button>
-
-    <div class="header">
-        <h1>AI Command Center</h1>
-        <h3>Developed by Salil | AI Engineer</h3>
-        <p>Welcome, <span id="displayName"></span></p>
-    </div>
-
-    <div class="section">
-        <h2>AI Prediction Engine</h2>
-        <input type="text" id="predictionInput" placeholder="Type something...">
-        <button onclick="predict()">Analyze</button>
-        <p id="predictionOutput"></p>
-    </div>
-
-    <div class="section">
-        <h2>📊 Train Neural Network</h2>
-        <button onclick="trainAI()">Start Training</button>
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
-        </div>
-        <p id="trainingStatus"></p>
-    </div>
-
-    <div class="section">
-        <h2>🚀 Projects</h2>
-        <p><strong>AI Chatbot:</strong> NLP-powered conversation system.</p>
-        <p><strong>Computer Vision:</strong> Deep learning image detection model.</p>
-        <p><strong>Predictive Analytics:</strong> ML forecasting engine.</p>
-    </div>
+<div class="sidebar" id="recommendations"></div>
 </div>
 
 <script>
+const API_KEY = "AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w";
+let player;
+let playlist = [];
+let currentIndex = 0;
 
-window.onload = function() {
-    const user = localStorage.getItem("aiUser");
-    if (user) showDashboard(user);
-};
-
-function login() {
-    const name = document.getElementById("username").value;
-    if (name.trim() === "") return;
-    localStorage.setItem("aiUser", name);
-    showDashboard(name);
+function onYouTubeIframeAPIReady(){
+    player = new YT.Player('player',{
+        height:'480',
+        width:'100%',
+        videoId:'',
+        events:{ 'onStateChange': onPlayerStateChange }
+    });
 }
 
-function showDashboard(name) {
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
-    document.getElementById("displayName").innerText = name;
+function searchVideos(){
+    const q = document.getElementById("searchInput").value;
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${q}&key=${API_KEY}`)
+    .then(r=>r.json())
+    .then(d=>{
+        playlist = d.items.map(i=>i.id.videoId);
+        currentIndex = 0;
+        loadVideo(playlist[0]);
+        showSidebar(d.items);
+    });
 }
 
-function logout() {
-    localStorage.removeItem("aiUser");
-    location.reload();
+function loadVideo(id){
+    player.loadVideoById(id);
 }
 
-function predict() {
-    const input = document.getElementById("predictionInput").value.toLowerCase();
-    let output = "General Pattern Recognition Domain";
-
-    if (input.includes("stock") || input.includes("bitcoin"))
-        output = "Finance / Time Series Prediction";
-    else if (input.includes("image") || input.includes("cat"))
-        output = "Computer Vision Domain";
-    else if (input.includes("chat") || input.includes("text"))
-        output = "Natural Language Processing";
-
-    document.getElementById("predictionOutput").innerText =
-        "AI Classification: " + output;
-}
-
-function trainAI() {
-    const progress = document.getElementById("progress");
-    const status = document.getElementById("trainingStatus");
-    let width = 0;
-    status.innerText = "Initializing training...";
-
-    const interval = setInterval(() => {
-        if (width >= 100) {
-            clearInterval(interval);
-            status.innerText = "Training Complete. Accuracy: 94.7%";
-        } else {
-            width++;
-            progress.style.width = width + "%";
-            status.innerText = "Training... " + width + "%";
+function onPlayerStateChange(e){
+    if(e.data == YT.PlayerState.ENDED){
+        currentIndex++;
+        if(currentIndex < playlist.length){
+            loadVideo(playlist[currentIndex]);
         }
-    }, 40);
+    }
 }
 
+function showSidebar(items){
+    const container = document.getElementById("recommendations");
+    container.innerHTML = "";
+    items.forEach(v=>{
+        const div = document.createElement("div");
+        div.className="video-item";
+        div.innerHTML = `
+            <img src="${v.snippet.thumbnails.medium.url}">
+            <div class="video-info">${v.snippet.title}</div>
+        `;
+        div.onclick = ()=> loadVideo(v.id.videoId);
+        container.appendChild(div);
+    });
+}
 </script>
 
 </body>
