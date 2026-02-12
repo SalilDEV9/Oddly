@@ -3,10 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
     <title>TITAN MAX | Salil</title>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
@@ -15,22 +11,22 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
         
+        /* HEADER */
         header { 
-            height: 80px; padding: 10px 15px; background: #000; 
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-            display: flex; flex-direction: column; justify-content: center; 
-            flex-shrink: 0; z-index: 5000; 
+            height: 80px; padding: 10px 15px; background: var(--glass); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; 
+            flex-direction: column; justify-content: center; flex-shrink: 0; z-index: 5000; 
         }
         .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; pointer-events: none; }
         .header-main { display:flex; align-items:center; gap:10px; width: 100%; }
         .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.2rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; pointer-events: none; }
         
+        /* SEARCH BAR */
         #search-form { flex: 1; display: flex; width: 100%; margin: 0; }
         .search-bar { 
             flex: 1; display: flex; background: #1a1a1a; 
             border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); 
-            padding: 0 10px; height: 42px; align-items: center; 
-            cursor: text; position: relative; z-index: 999999;
+            padding: 0 10px; height: 42px; align-items: center; cursor: text; 
         }
         input { 
             flex: 1; height: 100%; background: transparent; border: none; 
@@ -39,14 +35,16 @@
         }
         .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; padding-left: 10px; color: #aaa; }
 
+        /* LAYOUT */
         main { flex:1; display:flex; overflow:hidden; position:relative; }
         #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; z-index: 1; }
         
         #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); transition: all 0.3s ease; position: relative; }
         #player-embed { width:100%; height:100%; }
         
+        /* MINI FLOAT MODE */
         #player-container.mini-float {
-            position: fixed; bottom: 40px; right: 20px; width: 220px; z-index: 20000;
+            position: fixed; bottom: 20px; right: 20px; width: 240px; z-index: 20000;
             border: 2px solid var(--neon-blue); border-radius: 12px; overflow: hidden; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
         }
@@ -64,20 +62,18 @@
         .queue-item.active { border-color: var(--neon-blue); background:rgba(0,242,234,0.05); }
         .queue-item img { width:80px; height:45px; border-radius:4px; object-fit: cover; }
         
-        #stealth-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:none; align-items:center; justify-content:center; }
+        /* STEALTH OVERLAY - NOW WITH ZOOM BLOCK */
+        #stealth-overlay { 
+            position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:black; z-index:9999; display:none; 
+            align-items:center; justify-content:center;
+            touch-action: manipulation; /* CRITICAL FIX: DISKILLS DOUBLE-TAP ZOOM */
+        }
         #stealth-overlay.active { display:flex; }
-        .stealth-hint { color: #333; font-family:'Orbitron'; font-size: 0.8rem; }
+        .stealth-hint { color: #333; font-family:'Orbitron'; font-size: 0.8rem; pointer-events: none; }
         
         #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 350px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
         #lyrics-panel.show { transform: translateX(0); }
-        
-        /* SYSTEM STATUS BAR */
-        #sys-status {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 20px;
-            background: #000; color: #333; font-size: 0.6rem; 
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron'; z-index: 6000; pointer-events: none;
-        }
 
         @media (max-width: 900px) {
             main { flex-direction: column; }
@@ -94,7 +90,7 @@
             <div class="brand">TITAN</div>
             <form id="search-form" onsubmit="event.preventDefault(); performSearch();">
                 <div class="search-bar">
-                    <input type="text" id="query" placeholder="Type here..." value="Arijit Singh Audio" autocomplete="off" onclick="this.focus();">
+                    <input type="text" id="query" placeholder="Type song name..." value="Arijit Singh Audio" autocomplete="off" onclick="this.focus();">
                     <button type="submit" class="search-btn-icon">🔍</button>
                 </div>
             </form>
@@ -109,7 +105,6 @@
                 <button class="action-btn" id="mute-btn">🔇 MUTE</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
-                <button class="action-btn" id="cinema-btn">CINEMA</button>
                 <button class="action-btn" id="lyrics-btn">LYRICS</button>
             </div>
         </section>
@@ -121,38 +116,12 @@
     </main>
     
     <div id="stealth-overlay"><div class="stealth-hint">DOUBLE TAP TO WAKE</div></div>
-    <div id="sys-status">SYSTEM ONLINE</div>
     <audio id="ghost-audio" loop playsinline style="display:none;"><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
-        // --- TRIPLE-CORE FAILOVER SYSTEM ---
-        const API_KEYS = [
-            'AIzaSyBLk_r10QZ2sMhn6JavyZNEZ8Wmu1TdWlA', // Priority 1 (Newest)
-            'AIzaSyBe5Ulhapgo3EjgMRb52qUDan-84a0RuUM', // Priority 2
-            'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'  // Priority 3
-        ];
-        
-        let currentKeyIndex = 0;
+        const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
         let player, state = { playlist: [], index: 0, songTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
-
-        function getApiKey() {
-            const key = API_KEYS[currentKeyIndex];
-            document.getElementById('sys-status').innerText = `SYSTEM: ONLINE | KEY CORE: ${currentKeyIndex + 1}`;
-            return key;
-        }
-
-        function switchKey() {
-            currentKeyIndex++;
-            if(currentKeyIndex >= API_KEYS.length) {
-                currentKeyIndex = 0; 
-                document.getElementById('sys-status').innerText = "SYSTEM CRITICAL: ALL KEYS FAIL";
-                document.getElementById('sys-status').style.color = "red";
-                return false;
-            }
-            console.log(`TITAN SYSTEM: Switching to Key #${currentKeyIndex + 1}`);
-            return true;
-        }
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player-embed', {
@@ -167,27 +136,13 @@
             const qInp = document.getElementById('query');
             const q = qInp.value.trim();
             if(!q) return;
-            
+
             const queueDiv = document.getElementById('queue');
             queueDiv.style.opacity = '0.5'; 
             
             try {
-                // Use dynamic key
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${getApiKey()}`);
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
                 const data = await res.json();
-                
-                // AUTO-SWITCH LOGIC
-                if(data.error && data.error.code === 403) {
-                    if(switchKey()) {
-                        performSearch(); // Retry immediately
-                        return;
-                    } else {
-                        queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#ff4444;">ACCESS DENIED (403)<br><span style="font-size:0.7rem;">Check Google Cloud Settings.</span></div>';
-                        queueDiv.style.opacity = '1';
-                        return;
-                    }
-                }
-
                 queueDiv.style.opacity = '1'; 
 
                 if(data.items && data.items.length > 0) {
@@ -200,7 +155,7 @@
                 }
             } catch(e) { 
                 queueDiv.style.opacity = '1';
-                console.log("Titan Log: Network Error.");
+                console.log("Titan Log: API Error.");
             }
         }
 
@@ -280,7 +235,6 @@
         }
 
         window.onload = () => {
-            const sBtn = document.getElementById('search-btn');
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
             
@@ -295,7 +249,6 @@
             };
             
             document.getElementById('mute-btn').onclick = () => { if(player.isMuted()) player.unMute(); else player.mute(); };
-            document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
             
             document.getElementById('float-btn').onclick = () => {
                 document.getElementById('player-container').classList.toggle('mini-float');
@@ -306,8 +259,16 @@
                 stealth.classList.add('active');
                 if(navigator.wakeLock) navigator.wakeLock.request('screen').catch(()=>{});
             };
+            
+            // FIXED DOUBLE TAP LOGIC - 600ms WINDOW
             let lastTap = 0;
-            stealth.onclick = () => { const now = Date.now(); if(now - lastTap < 400) stealth.classList.remove('active'); lastTap = now; };
+            stealth.addEventListener('click', (e) => {
+                const now = Date.now();
+                if (now - lastTap < 600) {
+                    stealth.classList.remove('active');
+                }
+                lastTap = now;
+            });
         };
     </script>
 </body>
