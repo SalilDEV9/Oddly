@@ -123,9 +123,9 @@
         }
         .action-btn:active { background: var(--neon-blue); color: #000; }
 
-        #aod-btn { 
-            border-color: var(--neon-blue); 
-            background: rgba(0, 242, 234, 0.1); 
+        #stealth-btn { 
+            border-color: var(--neon-pink); 
+            background: rgba(255, 0, 85, 0.1); 
         }
 
         .dev-badge {
@@ -198,17 +198,26 @@
         #lyrics-panel.show { transform: translateX(0); }
         @media (max-width: 900px) { #lyrics-panel { width: 100%; } }
 
-        /* AOD OVERLAY */
-        #aod-overlay {
+        /* STEALTH OVERLAY (PURE BLACK) */
+        #stealth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: black; z-index: 9999; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
+            cursor: none;
+            align-items: center; justify-content: center;
         }
-        #aod-overlay.active { display: flex; }
-        #aod-content { text-align: center; position: absolute; transition: all 5s linear; }
-        .aod-time { font-family: 'Orbitron'; font-size: 3rem; color: #444; font-weight: 900; }
-        .aod-song { font-family: 'Outfit'; font-size: 1.2rem; color: #888; margin-top: 10px; max-width: 300px; }
-        .aod-battery { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--neon-blue); margin-top: 20px; }
+        #stealth-overlay.active { display: flex; }
+        
+        /* The Hint that fades away */
+        .stealth-hint {
+            color: #333; font-size: 0.8rem; font-family: 'Orbitron';
+            animation: fadeOut 4s forwards; /* Disappears after 4 seconds */
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
 
         /* Cinema Mode */
         body.cinema-mode #sidebar { display: none; }
@@ -236,7 +245,7 @@
             <div class="controls-bar">
                 <button class="action-btn" id="cinema-btn">Cinema</button>
                 <button class="action-btn" id="lyrics-btn">Lyrics</button>
-                <button class="action-btn" id="aod-btn">⚡ LOCK (AOD)</button>
+                <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
                 <button class="action-btn" onclick="document.body.requestFullscreen()">[ ]</button>
             </div>
 
@@ -256,16 +265,13 @@
         </aside>
     </main>
 
-    <div id="aod-overlay">
-        <div id="aod-content">
-            <div class="aod-time" id="aod-clock">00:00</div>
-            <div class="aod-song" id="aod-track">No Active Song</div>
-            <div class="aod-battery" id="aod-bat">--%</div>
-        </div>
-        <div style="position:absolute; bottom:50px; color:#333; font-size:0.8rem;">DOUBLE TAP TO WAKE</div>
+    <div id="stealth-overlay">
+        <div class="stealth-hint">DOUBLE TAP TO WAKE</div>
     </div>
 
-    <audio id="ghost-audio" loop><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
+    <audio id="ghost-audio" loop playsinline>
+        <source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg">
+    </audio>
 
     <script>
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
@@ -279,7 +285,7 @@
                 playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
                 events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
-            setTimeout(performSearch, 1500);
+            setTimeout(() => { if(window.performSearch) performSearch(); }, 1500);
         }
 
         async function performSearch() {
@@ -299,7 +305,8 @@
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
-                    ghostAudio.play().catch(e => {});
+                    // Handshake for multitasking
+                    ghostAudio.play().catch(e => console.log("Waiting for user interaction..."));
                 } else {
                     queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
                 }
@@ -311,21 +318,19 @@
             const item = state.playlist[i];
             player.loadVideoById(item.id.videoId);
             renderQueue();
+            if(item.snippet) fetchLyrics(item.snippet.title, item.snippet.channelTitle);
             
-            // INTELLIGENT LYRICS SEARCH
-            // We pass both Title and Channel Name to help the search
-            fetchLyrics(item.snippet.title, item.snippet.channelTitle);
-            
-            document.getElementById('aod-track').innerText = item.snippet.title;
-            
-            if('mediaSession' in navigator) {
+            // MULTITASKING SUPPORT: MEDIA SESSION
+            if('mediaSession' in navigator && item.snippet) {
+                const artworkSrc = (item.snippet.thumbnails.high) ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.medium.url;
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: item.snippet.title, artist: item.snippet.channelTitle,
-                    artwork: [{ src: item.snippet.thumbnails.high.url }]
+                    artwork: [{ src: artworkSrc }]
                 });
                 navigator.mediaSession.setActionHandler('play', () => player.playVideo());
                 navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
+                navigator.mediaSession.setActionHandler('previoustrack', () => { if(state.index>0) loadVideo(state.index-1); });
             }
         }
 
@@ -343,114 +348,82 @@
 
         function onPlayerStateChange(e) {
             if (e.data === 0) nextVideo();
-            if (e.data === 1) ghostAudio.play();
+            if (e.data === 1) ghostAudio.play().catch(e => {}); 
         }
 
         function nextVideo() { if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); }
 
-        /* --- THE INTELLIGENT LYRICS PARSER --- */
         async function fetchLyrics(title, channelName) {
             const panel = document.getElementById('lyrics-text');
             panel.innerText = "Analyzing Metadata...";
-
-            // 1. CLEAN THE TITLE (Remove Garbage)
-            // Removes: (Official), [Video], ft., feat., |, //, 4K, HD, etc.
+            if(!title) return;
             let cleanTitle = title.toLowerCase()
-                .replace(/\(.*\)/g, "") 
-                .replace(/\[.*\]/g, "") 
+                .replace(/\(.*\)/g, "") .replace(/\[.*\]/g, "") 
                 .replace(/official video|lyric video|official audio|audio|hq|hd|4k/g, "")
-                .replace(/ft\.|feat\.|starring|from/g, "")
-                .replace(/[|:;"]/g, "")
-                .trim();
-
-            // 2. GUESS ARTIST & SONG
+                .replace(/ft\.|feat\.|starring|from/g, "").replace(/[|:;"]/g, "").trim();
             let artist = "", song = "";
-
-            // Strategy A: If title has "-", assume Artist - Song
+            let cleanChannel = channelName ? channelName.replace("VEVO", "").trim() : "";
             if (cleanTitle.includes("-")) {
                 let parts = cleanTitle.split("-");
-                artist = parts[0].trim();
-                song = parts[1].trim();
+                artist = parts[0].trim(); song = parts[1].trim();
             } else {
-                // Strategy B: If no "-", assume Title is Song and Channel is Artist
-                artist = channelName.replace("VEVO", "").trim(); // Remove VEVO from channel
-                song = cleanTitle;
+                artist = cleanChannel; song = cleanTitle;
             }
-
-            // 3. ATTEMPT SEARCH
             try {
                 let res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
                 let data = await res.json();
-                
-                if(data.lyrics) {
-                    panel.innerText = data.lyrics;
-                } else {
-                    // Strategy C: Swap Artist and Song (Some titles are Song - Artist)
+                if(data.lyrics) { panel.innerText = data.lyrics; } 
+                else {
                     if (cleanTitle.includes("-")) {
                          let parts = cleanTitle.split("-");
-                         let swapArtist = parts[1].trim();
-                         let swapSong = parts[0].trim();
-                         let res2 = await fetch(`https://api.lyrics.ovh/v1/${swapArtist}/${swapSong}`);
+                         let res2 = await fetch(`https://api.lyrics.ovh/v1/${parts[1].trim()}/${parts[0].trim()}`);
                          let data2 = await res2.json();
-                         if(data2.lyrics) {
-                             panel.innerText = data2.lyrics;
-                             return;
-                         }
+                         if(data2.lyrics) { panel.innerText = data2.lyrics; return; }
                     }
-                    panel.innerText = `Lyrics not found for:\n"${song}" by "${artist}"\n\n(Database misses some songs)`;
+                    panel.innerText = `Lyrics not found for:\n"${song}"\n(Try manual search)`;
                 }
             } catch(e) { panel.innerText = "Lyrics unavailable."; }
         }
 
         /* --- UI LOGIC --- */
         window.onload = () => {
+            window.performSearch = performSearch;
             document.getElementById('search-btn').onclick = performSearch;
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
 
-            // AOD LOGIC
-            const aodOverlay = document.getElementById('aod-overlay');
-            const aodContent = document.getElementById('aod-content');
-            let aodInterval;
+            // STEALTH MODE LOGIC
+            const stealthOverlay = document.getElementById('stealth-overlay');
+            const hint = document.querySelector('.stealth-hint');
 
-            document.getElementById('aod-btn').onclick = async () => {
-                aodOverlay.classList.add('active');
-                if(navigator.wakeLock) await navigator.wakeLock.request('screen');
-                if(navigator.vibrate) navigator.vibrate(50);
-                updateClock(); updateBattery();
-                aodInterval = setInterval(() => { updateClock(); moveContent(); }, 60000);
+            document.getElementById('stealth-btn').onclick = async () => {
+                stealthOverlay.classList.add('active');
+                // Re-trigger animation
+                hint.style.animation = 'none';
+                hint.offsetHeight; /* trigger reflow */
+                hint.style.animation = 'fadeOut 4s forwards'; 
+                
+                try { if(navigator.wakeLock) await navigator.wakeLock.request('screen'); } catch(e){}
+                try { if(navigator.vibrate) navigator.vibrate(50); } catch(e){}
             };
 
+            // Double Tap to Wake
             let lastTap = 0;
-            aodOverlay.addEventListener('click', (e) => {
+            stealthOverlay.addEventListener('click', (e) => {
                 const currentTime = new Date().getTime();
                 const tapLength = currentTime - lastTap;
-                if (tapLength < 500 && tapLength > 0) {
-                    aodOverlay.classList.remove('active');
-                    if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
-                    clearInterval(aodInterval);
+                if (tapLength < 400 && tapLength > 0) {
+                    stealthOverlay.classList.remove('active');
+                    try { if(navigator.vibrate) navigator.vibrate([50, 50]); } catch(e){}
                 }
                 lastTap = currentTime;
             });
-
-            function updateClock() {
-                const now = new Date();
-                document.getElementById('aod-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-
-            async function updateBattery() {
-                if(navigator.getBattery) {
-                    const battery = await navigator.getBattery();
-                    document.getElementById('aod-bat').innerText = `⚡ ${Math.round(battery.level * 100)}%`;
-                }
-            }
-
-            function moveContent() {
-                const x = Math.floor(Math.random() * 20) - 10;
-                const y = Math.floor(Math.random() * 40) - 20;
-                aodContent.style.transform = `translate(${x}px, ${y}px)`;
-            }
+            
+            // Prevent accidental single touches from doing anything on stealth screen
+            stealthOverlay.addEventListener('touchstart', (e) => {
+               // Just track clicks, do nothing on touchstart to prevent passthrough
+            });
         };
     </script>
 </body>
