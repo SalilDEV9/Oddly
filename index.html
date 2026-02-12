@@ -11,33 +11,33 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
         
-        /* HEADER - GOD MODE Z-INDEX */
-        header { height:75px; padding:0 15px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:10000; position: relative; }
+        /* HEADER - FIXED LAYERING */
+        header { height:80px; padding:10px 15px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:5000; position: relative; }
         .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; pointer-events: none; }
-        .header-main { display:flex; align-items:center; gap:10px; }
+        .header-main { display:flex; align-items:center; gap:10px; position: relative; z-index: 5001; }
         .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.2rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; pointer-events: none; }
         
-        /* SEARCH BAR - UNBLOCKABLE */
-        .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.1); border-radius:8px; border:1px solid rgba(255,255,255,0.15); padding:6px 12px; position: relative; pointer-events: auto; }
-        input { width:100%; background:transparent; border:none; color:white; font-size:1rem; font-family:'Outfit',sans-serif; padding:0; margin:0; pointer-events: auto; }
+        /* SEARCH BAR - ULTRA ACCESSIBLE */
+        .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.15); border-radius:8px; border:1px solid rgba(255,255,255,0.2); padding:0 10px; height: 40px; align-items: center; position: relative; z-index: 999999; pointer-events: auto !important; }
+        input { width:100%; height: 100%; background:transparent; border:none; color:white; font-size:1rem; font-family:'Outfit',sans-serif; padding:0; margin:0; pointer-events: auto !important; }
         .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; padding-left: 10px; color: #aaa; pointer-events: auto; }
 
         main { flex:1; display:flex; overflow:hidden; position:relative; }
         #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; z-index: 1; }
         
         /* PLAYER CONTAINER & MINI MODE */
-        #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); transition: all 0.3s ease; }
+        #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); transition: all 0.3s ease; position: relative; }
         #player-embed { width:100%; height:100%; }
         
-        /* THE MINI-FLOAT CLASS */
+        /* THE MINI-FLOAT CLASS (Bottom Right) */
         #player-container.mini-float {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 200px;
-            z-index: 20000; /* Above everything */
-            border: 1px solid var(--neon-blue);
-            border-radius: 8px;
+            width: 220px;
+            z-index: 20000;
+            border: 2px solid var(--neon-blue);
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
         }
@@ -76,7 +76,7 @@
         <div class="header-main">
             <div class="brand">TITAN</div>
             <div class="search-bar">
-                <input type="text" id="query" placeholder="Type here..." value="Arijit Singh Audio" autocomplete="off">
+                <input type="text" id="query" placeholder="Type song name..." value="Arijit Singh Audio" autocomplete="off">
                 <button class="search-btn-icon" id="search-btn">🔍</button>
             </div>
         </div>
@@ -86,7 +86,7 @@
             <div id="player-container"><div id="player-embed"></div></div>
             <div class="controls-bar">
                 <button class="action-btn" id="full-btn">⛶ FULL</button>
-                <button class="action-btn" id="float-btn">❐ FLOAT</button>
+                <button class="action-btn" id="float-btn">❐ MINI</button>
                 <button class="action-btn" id="mute-btn">🔇 MUTE</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
@@ -108,27 +108,23 @@
         let player, state = { playlist: [], index: 0, songTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
 
-        function onYouTubeIframeAPIReady() { createPlayer(); }
-
-        function createPlayer(startTime = 0) {
-            if(player && player.destroy) player.destroy();
-            const videoId = state.playlist.length > 0 ? state.playlist[state.index].id.videoId : '';
+        function onYouTubeIframeAPIReady() {
+            // Just init empty player to be ready
             player = new YT.Player('player-embed', {
-                height: '100%', width: '100%', videoId: videoId,
-                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0, 'start': Math.floor(startTime) },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
+                height: '100%', width: '100%',
+                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
+                events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
+            // Auto search on load
+            setTimeout(performSearch, 1000);
         }
-
-        function onPlayerReady() { if(state.playlist.length === 0) performSearch(); }
 
         async function performSearch() {
             const qInp = document.getElementById('query');
             const q = qInp.value.trim();
             if(!q) return;
             
-            // Note: We REMOVED the auto-blur so you can keep typing if you want
-            // qInp.blur(); 
+            // Note: Removed qInp.blur() so keyboard stays if you want
             
             const queueDiv = document.getElementById('queue');
             queueDiv.style.opacity = '0.5'; 
@@ -154,15 +150,17 @@
 
         function loadVideo(i, startTime = 0) {
             state.index = i; state.songTime = startTime;
-            const videoId = state.playlist[i].id.videoId;
-            if(player && player.loadVideoById) {
-                player.loadVideoById({ videoId: videoId, startSeconds: startTime });
-            }
-            renderQueue();
-            const item = state.playlist[i];
-            if(item.snippet) {
-                updateMediaSession(item);
-                fetchSmartLyrics(item.snippet.title, item.snippet.channelTitle);
+            if(state.playlist[i]) {
+                const videoId = state.playlist[i].id.videoId;
+                if(player && player.loadVideoById) {
+                    player.loadVideoById({ videoId: videoId, startSeconds: startTime });
+                }
+                renderQueue();
+                const item = state.playlist[i];
+                if(item.snippet) {
+                    updateMediaSession(item);
+                    fetchSmartLyrics(item.snippet.title, item.snippet.channelTitle);
+                }
             }
         }
 
@@ -203,10 +201,9 @@
             }
         }
 
-        // --- SMART LYRICS ---
         async function fetchSmartLyrics(title, channel) {
             const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Scanning Neural Net...";
+            panel.innerText = "Scanning...";
             const cleanTitle = title.toLowerCase().replace(/\(.*\)/g, "").replace(/\[.*\]/g, "").replace(/official video|lyric video|audio|hd|4k|hq/g, "").replace(/ft\.|feat\.|starring/g, "").replace(/[|:;"]/g, "").trim();
             const cleanChannel = channel ? channel.replace("VEVO", "").replace("Official", "").trim() : "";
             const tryFetch = async (a, s) => {
@@ -231,10 +228,20 @@
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
-            document.getElementById('skip-btn').onclick = () => { const time = state.songTime; document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>'; createPlayer(time); };
+            
+            // SKIP AD LOGIC: Rebuild player at specific time
+            document.getElementById('skip-btn').onclick = () => { 
+                const time = state.songTime; 
+                document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>'; 
+                player = new YT.Player('player-embed', {
+                    height: '100%', width: '100%', videoId: state.playlist[state.index].id.videoId,
+                    playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0, 'start': Math.floor(time) },
+                    events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
+                });
+            };
+            
             document.getElementById('mute-btn').onclick = () => { if(player.isMuted()) player.unMute(); else player.mute(); };
             
-            // --- NEW FLOAT LOGIC ---
             document.getElementById('float-btn').onclick = () => {
                 document.getElementById('player-container').classList.toggle('mini-float');
             };
