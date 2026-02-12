@@ -22,7 +22,7 @@
         .header-main { display:flex; align-items:center; gap:10px; width: 100%; }
         .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.2rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; pointer-events: none; }
         
-        /* SEARCH BAR - LAPTOP & MOBILE PROOF */
+        /* SEARCH BAR */
         #search-form { flex: 1; display: flex; width: 100%; margin: 0; }
         .search-bar { 
             flex: 1; display: flex; background: #1a1a1a; 
@@ -97,7 +97,7 @@
             <div id="player-container"><div id="player-embed"></div></div>
             <div class="controls-bar">
                 <button class="action-btn" id="full-btn">⛶ FULL</button>
-                <button class="action-btn" id="float-btn">❐ FLOAT</button>
+                <button class="action-btn" id="float-btn">❐ MINI</button>
                 <button class="action-btn" id="mute-btn">🔇 MUTE</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
@@ -116,8 +116,9 @@
     <audio id="ghost-audio" loop playsinline style="display:none;"><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
-        // NEW API KEY INJECTED
+        // YOUR NEW KEY
         const API_KEY = 'AIzaSyBe5Ulhapgo3EjgMRb52qUDan-84a0RuUM'; 
+        
         let player, state = { playlist: [], index: 0, songTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
 
@@ -135,9 +136,6 @@
             const q = qInp.value.trim();
             if(!q) return;
             
-            // Optional: Blur on mobile, Keep focus on laptop
-            // qInp.blur(); 
-            
             const queueDiv = document.getElementById('queue');
             queueDiv.style.opacity = '0.5'; 
             
@@ -145,6 +143,15 @@
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
                 const data = await res.json();
                 queueDiv.style.opacity = '1'; 
+
+                if(data.error) {
+                    // Check if quota or access denied
+                    console.log("Titan Error:", data.error.message);
+                    if(data.error.code === 403) {
+                       queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#ff4444;">API KEY ERROR (403)<br><span style="font-size:0.7rem;color:#999;">Check Google Cloud Console</span></div>';
+                    }
+                    return;
+                }
 
                 if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
@@ -156,7 +163,7 @@
                 }
             } catch(e) { 
                 queueDiv.style.opacity = '1';
-                console.log("Titan Log: API Error.");
+                console.log("Titan Log: Network Error.");
             }
         }
 
@@ -237,9 +244,6 @@
 
         window.onload = () => {
             const sBtn = document.getElementById('search-btn');
-            // Allow typing by NOT blocking default events inside the form
-            // sBtn triggers submit automatically due to type="submit"
-
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
             
@@ -254,9 +258,7 @@
             };
             
             document.getElementById('mute-btn').onclick = () => { if(player.isMuted()) player.unMute(); else player.mute(); };
-            document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
             
-            // FLOAT LOGIC
             document.getElementById('float-btn').onclick = () => {
                 document.getElementById('player-container').classList.toggle('mini-float');
             };
