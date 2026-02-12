@@ -9,11 +9,10 @@
     <style>
         /* --- 1. TITAN MAX DESIGN SYSTEM --- */
         :root {
-            --glass: rgba(10, 10, 10, 0.8);
+            --glass: rgba(10, 10, 10, 0.85);
             --glass-border: rgba(255, 255, 255, 0.1);
             --neon-blue: #00f2ea;
             --neon-pink: #ff0055;
-            --titan-gold: #ffd700;
             --text-main: #ffffff;
         }
 
@@ -23,7 +22,6 @@
             margin: 0;
             font-family: 'Outfit', sans-serif;
             background: #050505;
-            /* Subtle animated mesh gradient */
             background-image: 
                 radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
                 radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
@@ -62,10 +60,7 @@
             user-select: none;
         }
         
-        .logo-icon {
-            font-size: 1.8rem;
-            filter: drop-shadow(0 0 5px var(--neon-blue));
-        }
+        .logo-icon { font-size: 1.8rem; filter: drop-shadow(0 0 5px var(--neon-blue)); }
 
         .search-bar {
             flex: 1;
@@ -103,11 +98,11 @@
         }
         button.icon-btn:hover { color: #fff; transform: scale(1.1); }
 
-        /* --- 3. MAIN LAYOUT (FIXED SCROLLING) --- */
+        /* --- 3. MAIN LAYOUT --- */
         main {
             display: flex;
             flex: 1;
-            overflow: hidden; /* Critical for inner scrolling */
+            overflow: hidden;
             position: relative;
         }
 
@@ -137,17 +132,19 @@
         .controls-bar {
             margin-top: 30px;
             display: flex;
-            gap: 15px;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .action-btn {
-            padding: 10px 24px;
+            padding: 12px 20px;
             border-radius: 6px;
             border: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.05);
             color: white;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             letter-spacing: 1px;
             cursor: pointer;
             transition: 0.3s;
@@ -156,6 +153,16 @@
 
         .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-blue); }
         .action-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; box-shadow: 0 0 20px rgba(0, 242, 234, 0.4); }
+
+        /* SPECIAL POCKET MODE BUTTON */
+        #pocket-btn {
+            border-color: var(--neon-pink);
+            background: rgba(255, 0, 85, 0.1);
+        }
+        #pocket-btn:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+        }
 
         /* DEVELOPER BADGE */
         .dev-badge {
@@ -170,7 +177,7 @@
         }
         .dev-badge span { color: var(--neon-blue); font-weight: bold; }
 
-        /* --- 4. SIDEBAR (SCROLL ENGINE FIXED) --- */
+        /* --- 4. SIDEBAR --- */
         #sidebar {
             width: 380px;
             background: rgba(15, 15, 15, 0.95);
@@ -191,14 +198,12 @@
             flex-shrink: 0;
         }
 
-        /* The container for the list items - This is what scrolls */
         #queue {
             flex: 1;
-            overflow-y: auto; /* Force vertical scroll */
+            overflow-y: auto;
             padding: 10px;
         }
 
-        /* Custom Scrollbar Styling */
         #queue::-webkit-scrollbar { width: 6px; }
         #queue::-webkit-scrollbar-track { background: #111; }
         #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -241,6 +246,45 @@
         }
         #lyrics-panel.show { transform: translateX(0); }
 
+        /* --- 6. POCKET MODE OVERLAY (THE STEALTH LAYER) --- */
+        #pocket-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        #pocket-overlay.active { display: flex; }
+        
+        .pocket-msg { font-family: 'Orbitron'; font-size: 1rem; margin-bottom: 20px; color: #444; }
+        
+        .unlock-slider {
+            width: 250px;
+            height: 50px;
+            background: #111;
+            border-radius: 25px;
+            position: relative;
+            border: 1px solid #333;
+        }
+        
+        .unlock-thumb {
+            width: 46px; height: 46px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            position: absolute;
+            top: 1px; left: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center; justify-content: center;
+            font-weight: bold; color: black;
+            transition: left 0.1s;
+        }
+
         /* CINEMA MODE */
         body.cinema-mode #sidebar { width: 0; opacity: 0; }
         body.cinema-mode #stage { width: 100vw; }
@@ -267,7 +311,7 @@
             <span class="logo-icon">⚡</span> TITAN MAX
         </div>
         <div class="search-bar">
-            <input type="text" id="query" placeholder="Waiting for command...">
+            <input type="text" id="query" placeholder="Search..." value="Arijit Singh Audio">
             <button class="icon-btn" id="search-btn">🔍</button>
         </div>
     </header>
@@ -279,9 +323,10 @@
             </div>
 
             <div class="controls-bar">
-                <button class="action-btn" id="cinema-btn">Cinema Mode</button>
+                <button class="action-btn" id="cinema-btn">Cinema</button>
                 <button class="action-btn" id="lyrics-btn">Lyrics</button>
-                <button class="action-btn" onclick="toggleFullscreen()">Fullscreen</button>
+                <button class="action-btn" id="fullscreen-btn">Full</button>
+                <button class="action-btn" id="pocket-btn">🔒 POCKET MODE</button>
             </div>
             
             <div class="dev-badge">System Architect: <span>Salil</span></div>
@@ -298,11 +343,19 @@
             <div class="sidebar-header">Operational Queue</div>
             <div id="queue">
                 <div style="padding:40px 20px; text-align:center; color:#444;">
-                    System Idle.<br>Enter a search query to initiate Titan Max.
+                    Initializing Titan Max...
                 </div>
             </div>
         </aside>
     </main>
+
+    <div id="pocket-overlay">
+        <div class="pocket-msg">SYSTEM LOCKED • AUDIO ACTIVE</div>
+        <div class="unlock-slider" id="unlock-area">
+            <div class="unlock-thumb" id="unlock-thumb">➜</div>
+        </div>
+        <div style="margin-top:20px; color:#222; font-size:0.8rem;">Slide to Unlock</div>
+    </div>
 
     <audio id="ghost-audio" loop>
         <source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg">
@@ -313,7 +366,7 @@
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
         let player;
         let state = { playlist: [], index: 0, lyricsOpen: false, cinemaMode: false };
-        const ghostAudio = document.getElementById('ghost-audio');
+        let wakeLock = null; // Variable for Wake Lock API
 
         // --- 2. INITIALIZATION ---
         function onYouTubeIframeAPIReady() {
@@ -322,19 +375,18 @@
                 playerVars: { 'autoplay': 1, 'controls': 1, 'modestbranding': 1, 'playsinline': 1, 'rel': 0 },
                 events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
-            // NOTE: Auto-search REMOVED as requested. Waiting for user input.
+            setTimeout(performSearch, 1500); // Auto-start
         }
 
         // --- 3. SEARCH ENGINE ---
         async function performSearch() {
-            const q = document.getElementById('query').value.trim();
+            const queryInput = document.getElementById('query');
+            const q = queryInput.value.trim();
             if(!q) return;
 
-            // Adding "audio" finds better music matches, but works for anything
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
             
             try {
-                // Show loading state
                 document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center; color:#666;">Scanning database...</div>';
 
                 const res = await fetch(url);
@@ -345,14 +397,12 @@
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
-                    
-                    // Trigger ghost audio for background play capability
-                    ghostAudio.play().catch(e => console.log("Ghost Audio needs interaction"));
                 } else {
                     document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
                 }
             } catch(e) { 
-                alert("Connection Error. Check API Key or Internet."); 
+                console.error(e);
+                document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center; color:red;">Connection Error.</div>';
             }
         }
 
@@ -377,15 +427,13 @@
                     </div>
                 </div>
             `).join('');
-            
-            // Auto-scroll to active item
             const active = document.querySelector('.queue-item.active');
             if(active) active.scrollIntoView({behavior: 'smooth', block: 'nearest'});
         }
 
         function onPlayerStateChange(e) {
             if (e.data === 0) nextVideo(); // Ended
-            if (e.data === 1) ghostAudio.play(); // Ensure background audio is active
+            if (e.data === 1) document.getElementById('ghost-audio').play(); // Keep session alive
         }
 
         function nextVideo() {
@@ -397,7 +445,6 @@
             const panel = document.getElementById('lyrics-text');
             panel.innerText = "Searching lyrics...";
             
-            // Clean title for better search accuracy
             let cleanTitle = rawTitle.replace(/\(.*\)|\[.*\]/g, "").replace(/official video|lyric video|audio/gi, "").trim();
             let artist = "", song = cleanTitle;
             
@@ -409,8 +456,7 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s Timeout
-                
+                const timeoutId = setTimeout(() => controller.abort(), 3000); 
                 const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const data = await res.json();
@@ -418,14 +464,14 @@
                 if (data.lyrics) {
                     panel.innerText = data.lyrics;
                 } else {
-                    panel.innerText = `Lyrics not found for:\n"${song}"\n\n(Try searching just the song name)`;
+                    panel.innerText = `Lyrics not found for:\n"${song}"`;
                 }
             } catch (e) {
-                panel.innerText = "Lyrics unavailable or timed out.";
+                panel.innerText = "Lyrics unavailable.";
             }
         }
 
-        // --- 6. BACKGROUND PLAY HELPER ---
+        // --- 6. BACKGROUND PLAY & WAKE LOCK ---
         function updateMediaSession(item) {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -436,41 +482,104 @@
                 navigator.mediaSession.setActionHandler('play', () => player.playVideo());
                 navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
-                navigator.mediaSession.setActionHandler('previoustrack', () => {
-                    if(state.index > 0) loadVideo(state.index - 1);
-                });
             }
         }
 
-        // --- 7. UI CONTROLS ---
-        document.getElementById('search-btn').onclick = performSearch;
-        document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
-
-        document.getElementById('lyrics-btn').onclick = () => {
-            state.lyricsOpen = !state.lyricsOpen;
-            const panel = document.getElementById('lyrics-panel');
-            const btn = document.getElementById('lyrics-btn');
-            panel.classList.toggle('show', state.lyricsOpen);
-            btn.classList.toggle('active', state.lyricsOpen);
-        };
-
-        document.getElementById('cinema-btn').onclick = () => {
-            state.cinemaMode = !state.cinemaMode;
-            document.body.classList.toggle('cinema-mode', state.cinemaMode);
-            const btn = document.getElementById('cinema-btn');
-            btn.classList.toggle('active', state.cinemaMode);
-            btn.innerText = state.cinemaMode ? "EXIT CINEMA" : "CINEMA MODE";
-        };
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.body.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
+        // WAKE LOCK FUNCTION
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock active');
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
             }
         }
+
+        // --- 7. EVENT LISTENERS (WINDOW LOAD) ---
+        window.onload = function() {
+            document.getElementById('search-btn').onclick = performSearch;
+            document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
+            
+            document.getElementById('lyrics-btn').onclick = () => {
+                state.lyricsOpen = !state.lyricsOpen;
+                const panel = document.getElementById('lyrics-panel');
+                const btn = document.getElementById('lyrics-btn');
+                panel.classList.toggle('show', state.lyricsOpen);
+                btn.classList.toggle('active', state.lyricsOpen);
+            };
+
+            document.getElementById('cinema-btn').onclick = () => {
+                state.cinemaMode = !state.cinemaMode;
+                document.body.classList.toggle('cinema-mode', state.cinemaMode);
+                const btn = document.getElementById('cinema-btn');
+                btn.classList.toggle('active', state.cinemaMode);
+                btn.innerText = state.cinemaMode ? "EXIT" : "CINEMA";
+            };
+
+            document.getElementById('fullscreen-btn').onclick = () => {
+                if (!document.fullscreenElement) {
+                    document.body.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }
+            };
+
+            // --- POCKET MODE LOGIC ---
+            const pocketBtn = document.getElementById('pocket-btn');
+            const overlay = document.getElementById('pocket-overlay');
+            const thumb = document.getElementById('unlock-thumb');
+            let isDragging = false;
+
+            pocketBtn.onclick = async () => {
+                overlay.classList.add('active');
+                await requestWakeLock(); // Prevent screen sleep
+                // Try to go fullscreen for full black immersion
+                if (!document.fullscreenElement) document.body.requestFullscreen();
+            };
+
+            // Unlock Slider Logic
+            thumb.addEventListener('mousedown', startDrag);
+            thumb.addEventListener('touchstart', startDrag);
+
+            function startDrag(e) {
+                isDragging = true;
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('touchmove', drag);
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchend', endDrag);
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const sliderRect = document.getElementById('unlock-area').getBoundingClientRect();
+                let newLeft = clientX - sliderRect.left - 23; 
+                
+                // Bounds
+                if (newLeft < 2) newLeft = 2;
+                if (newLeft > 200) newLeft = 200;
+                
+                thumb.style.left = newLeft + 'px';
+
+                // Unlock condition
+                if (newLeft >= 195) {
+                    isDragging = false;
+                    overlay.classList.remove('active');
+                    thumb.style.left = '2px';
+                    if (wakeLock) wakeLock.release(); // Release lock
+                }
+            }
+
+            function endDrag() {
+                isDragging = false;
+                // Snap back if not unlocked
+                if (parseInt(thumb.style.left) < 195) {
+                    thumb.style.left = '2px';
+                }
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('touchmove', drag);
+            }
+        };
     </script>
 </body>
 </html>
