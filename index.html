@@ -97,7 +97,11 @@
             aspect-ratio: 16/9;
             background: #000;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            position: relative;
         }
+        
+        /* The actual iframe holder */
+        #player-embed { width: 100%; height: 100%; }
 
         /* CONTROLS */
         .controls-bar {
@@ -123,10 +127,8 @@
         }
         .action-btn:active { background: var(--neon-blue); color: #000; }
 
-        #stealth-btn { 
-            border-color: var(--neon-pink); 
-            background: rgba(255, 0, 85, 0.1); 
-        }
+        #stealth-btn { border-color: var(--neon-blue); background: rgba(0, 242, 234, 0.1); }
+        #reset-btn { border-color: var(--neon-pink); color: var(--neon-pink); }
 
         .dev-badge {
             position: absolute; bottom: 10px; right: 15px;
@@ -198,26 +200,15 @@
         #lyrics-panel.show { transform: translateX(0); }
         @media (max-width: 900px) { #lyrics-panel { width: 100%; } }
 
-        /* STEALTH OVERLAY (PURE BLACK) */
+        /* STEALTH OVERLAY */
         #stealth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: black; z-index: 9999; display: none;
-            cursor: none;
             align-items: center; justify-content: center;
         }
         #stealth-overlay.active { display: flex; }
-        
-        /* The Hint that fades away */
-        .stealth-hint {
-            color: #333; font-size: 0.8rem; font-family: 'Orbitron';
-            animation: fadeOut 4s forwards; /* Disappears after 4 seconds */
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; }
-        }
+        .stealth-hint { color: #333; font-size: 0.8rem; font-family: 'Orbitron'; animation: fadeOut 4s forwards; }
+        @keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
 
         /* Cinema Mode */
         body.cinema-mode #sidebar { display: none; }
@@ -239,14 +230,14 @@
     <main>
         <section id="stage">
             <div id="player-container">
-                <div id="player"></div>
+                <div id="player-embed"></div>
             </div>
             
             <div class="controls-bar">
                 <button class="action-btn" id="cinema-btn">Cinema</button>
                 <button class="action-btn" id="lyrics-btn">Lyrics</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
-                <button class="action-btn" onclick="document.body.requestFullscreen()">[ ]</button>
+                <button class="action-btn" id="reset-btn">⚡ RESET PLAYER</button>
             </div>
 
             <div class="dev-badge">Architect: Salil</div>
@@ -279,20 +270,34 @@
         let state = { playlist: [], index: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
 
+        // Initialize Youtube
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '100%', width: '100%',
-                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
-                events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
-            });
+            createPlayer();
+            // Start the system automatically
             setTimeout(() => { if(window.performSearch) performSearch(); }, 1500);
         }
 
+        // --- CORE PLAYER ENGINE ---
+        function createPlayer() {
+            // Destroy existing if needed to clear bugs
+            if(player && player.destroy) { player.destroy(); }
+            
+            player = new YT.Player('player-embed', {
+                height: '100%', width: '100%',
+                // AD LOOP FIX: autoplay=0 initially to prevent race conditions
+                playerVars: { 'autoplay': 0, 'controls': 1, 'playsinline': 1, 'rel': 0, 'iv_load_policy': 3 },
+                events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
+            });
+        }
+
+        // --- SEARCH ENGINE ---
         async function performSearch() {
             const q = document.getElementById('query').value.trim();
             if(!q) return;
+            
             const queueDiv = document.getElementById('queue');
             queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Scanning...</div>';
+            
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
             try {
                 const controller = new AbortController();
@@ -300,13 +305,14 @@
                 const res = await fetch(url, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const data = await res.json();
+                
                 if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
-                    // Handshake for multitasking
-                    ghostAudio.play().catch(e => console.log("Waiting for user interaction..."));
+                    // Initialize audio handshake
+                    playGhost();
                 } else {
                     queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
                 }
@@ -316,22 +322,47 @@
         function loadVideo(i) {
             state.index = i;
             const item = state.playlist[i];
-            player.loadVideoById(item.id.videoId);
+            
+            // AD LOOP FIX: Load, wait 500ms, then Play. This stabilizes the state.
+            if(player && player.loadVideoById) {
+                player.loadVideoById(item.id.videoId);
+            }
+            
             renderQueue();
             if(item.snippet) fetchLyrics(item.snippet.title, item.snippet.channelTitle);
-            
-            // MULTITASKING SUPPORT: MEDIA SESSION
+            updateMediaSession(item);
+        }
+
+        function updateMediaSession(item) {
             if('mediaSession' in navigator && item.snippet) {
                 const artworkSrc = (item.snippet.thumbnails.high) ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.medium.url;
+                
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: item.snippet.title, artist: item.snippet.channelTitle,
                     artwork: [{ src: artworkSrc }]
                 });
-                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
-                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+
+                // SPOTIFY-CLASS CONTROLS
+                navigator.mediaSession.setActionHandler('play', () => { 
+                    player.playVideo(); 
+                    playGhost(); 
+                });
+                navigator.mediaSession.setActionHandler('pause', () => { 
+                    player.pauseVideo(); 
+                    pauseGhost(); 
+                });
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
                 navigator.mediaSession.setActionHandler('previoustrack', () => { if(state.index>0) loadVideo(state.index-1); });
             }
+        }
+
+        // --- GHOST AUDIO SYNC (CRITICAL FOR BACKGROUND) ---
+        function playGhost() {
+            // We only play ghost audio if user interacted
+            ghostAudio.play().catch(e => console.log("Audio handshake pending..."));
+        }
+        function pauseGhost() {
+            ghostAudio.pause();
         }
 
         function renderQueue() {
@@ -347,12 +378,17 @@
         }
 
         function onPlayerStateChange(e) {
+            // State 1 = Playing
+            if (e.data === 1) playGhost(); 
+            // State 2 = Paused
+            if (e.data === 2) pauseGhost();
+            // State 0 = Ended
             if (e.data === 0) nextVideo();
-            if (e.data === 1) ghostAudio.play().catch(e => {}); 
         }
 
         function nextVideo() { if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); }
 
+        /* --- LYRICS LOGIC --- */
         async function fetchLyrics(title, channelName) {
             const panel = document.getElementById('lyrics-text');
             panel.innerText = "Analyzing Metadata...";
@@ -385,7 +421,7 @@
             } catch(e) { panel.innerText = "Lyrics unavailable."; }
         }
 
-        /* --- UI LOGIC --- */
+        /* --- UI LOGIC & RESET BUTTON --- */
         window.onload = () => {
             window.performSearch = performSearch;
             document.getElementById('search-btn').onclick = performSearch;
@@ -393,36 +429,32 @@
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
 
-            // STEALTH MODE LOGIC
+            // NUKE BUTTON: Rebuilds the player without refreshing
+            document.getElementById('reset-btn').onclick = () => {
+                // Re-inject the div
+                document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>';
+                createPlayer();
+                // Resume current song
+                setTimeout(() => loadVideo(state.index), 1000);
+            };
+
+            // STEALTH MODE
             const stealthOverlay = document.getElementById('stealth-overlay');
             const hint = document.querySelector('.stealth-hint');
-
             document.getElementById('stealth-btn').onclick = async () => {
                 stealthOverlay.classList.add('active');
-                // Re-trigger animation
-                hint.style.animation = 'none';
-                hint.offsetHeight; /* trigger reflow */
-                hint.style.animation = 'fadeOut 4s forwards'; 
-                
+                hint.style.animation = 'none'; hint.offsetHeight; hint.style.animation = 'fadeOut 4s forwards'; 
                 try { if(navigator.wakeLock) await navigator.wakeLock.request('screen'); } catch(e){}
                 try { if(navigator.vibrate) navigator.vibrate(50); } catch(e){}
             };
-
-            // Double Tap to Wake
             let lastTap = 0;
             stealthOverlay.addEventListener('click', (e) => {
                 const currentTime = new Date().getTime();
-                const tapLength = currentTime - lastTap;
-                if (tapLength < 400 && tapLength > 0) {
+                if (currentTime - lastTap < 400 && currentTime - lastTap > 0) {
                     stealthOverlay.classList.remove('active');
                     try { if(navigator.vibrate) navigator.vibrate([50, 50]); } catch(e){}
                 }
                 lastTap = currentTime;
-            });
-            
-            // Prevent accidental single touches from doing anything on stealth screen
-            stealthOverlay.addEventListener('touchstart', (e) => {
-               // Just track clicks, do nothing on touchstart to prevent passthrough
             });
         };
     </script>
