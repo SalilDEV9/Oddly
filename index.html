@@ -7,105 +7,68 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --glass: rgba(12, 12, 12, 0.95);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --neon-blue: #00f2ea;
-            --neon-pink: #ff0055;
-            --text-main: #ffffff;
-        }
+        :root { --glass: rgba(12,12,12,0.95); --neon-blue: #00f2ea; --neon-pink: #ff0055; --text-main: #ffffff; }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body {
-            margin: 0; font-family: 'Outfit', sans-serif; background: #050505;
-            color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-        }
-        header {
-            height: 70px; padding: 0 20px; background: var(--glass);
-            border-bottom: 1px solid var(--glass-border); display: flex;
-            flex-direction: column; justify-content: center; flex-shrink: 0; z-index: 1000;
-        }
-        .dev-top { font-size: 0.65rem; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
-        .dev-top span { color: var(--neon-blue); font-weight: bold; }
-        .header-main { display: flex; align-items: center; gap: 15px; }
-        .brand { 
-            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.3rem;
-            background: linear-gradient(90deg, #fff, var(--neon-blue));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .search-bar { flex: 1; display: flex; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid var(--glass-border); padding: 5px 10px; }
-        input { width: 100%; background: transparent; border: none; color: white; font-size: 0.95rem; font-family: 'Outfit', sans-serif; }
-        button.icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: #aaa; }
-        main { flex: 1; display: flex; overflow: hidden; position: relative; }
-        #stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); position: relative; }
-        #player-container { width: 100%; max-width: 1000px; aspect-ratio: 16/9; background: #000; box-shadow: 0 0 50px rgba(0,0,0,0.8); position: relative; }
-        #player-embed { width: 100%; height: 100%; }
-        .controls-bar { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px; }
-        .action-btn { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.05); color: white; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
-        .action-btn:active { background: var(--neon-blue); color: #000; }
-        #mute-btn { border-color: #ff9900; color: #ff9900; }
-        #mute-btn.active { background: #ff9900; color: #000; }
-        #skip-btn { border-color: var(--neon-pink); color: var(--neon-pink); font-weight: bold; }
-        #sidebar { width: 320px; background: #080808; border-left: 1px solid var(--glass-border); display: flex; flex-direction: column; height: 100%; }
-        .sidebar-header { padding: 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; border-bottom: 1px solid #222; background: #111; }
-        #queue { flex: 1; overflow-y: auto; padding: 10px; }
-        #queue::-webkit-scrollbar { width: 6px; }
-        #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .queue-item { display: flex; gap: 10px; padding: 10px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .queue-item.active { background: rgba(0, 242, 234, 0.08); border-color: var(--neon-blue); border: 1px solid; }
-        .queue-item img { width: 80px; height: 45px; object-fit: cover; border-radius: 4px; }
-        .queue-item .meta { overflow: hidden; }
-        .queue-item .title { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
-        #lyrics-panel.show { transform: translateX(0); }
-        #stealth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: none; align-items: center; justify-content: center; }
-        #stealth-overlay.active { display: flex; }
-        @media (max-width: 900px) { main { flex-direction: column; } #stage { height: 45vh; flex: none; } #sidebar { width: 100%; height: 55vh; flex: none; } #lyrics-panel { width: 100%; } }
+        body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+        header { height:70px; padding:0 20px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:1000; }
+        .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
+        .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.3rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.05); border-radius:8px; border:1px solid rgba(255,255,255,0.08); padding:5px 10px; }
+        input { width:100%; background:transparent; border:none; color:white; font-size:0.95rem; font-family:'Outfit',sans-serif; }
+        main { flex:1; display:flex; overflow:hidden; position:relative; }
+        #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; }
+        #player-container { width:100%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); }
+        .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:10px; }
+        .action-btn { padding:10px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.05); color:white; font-family:'Orbitron',sans-serif; font-size:0.7rem; cursor:pointer; }
+        #skip-btn { border-color:var(--neon-pink); color:var(--neon-pink); }
+        #sidebar { width:320px; background:#080808; border-left:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; }
+        .sidebar-header { padding:15px; font-size:0.75rem; color:#888; text-transform:uppercase; border-bottom:1px solid #222; }
+        #queue { flex:1; overflow-y:auto; padding:10px; }
+        .queue-item { display:flex; gap:10px; padding:10px; margin-bottom:5px; border-radius:6px; cursor:pointer; }
+        .queue-item.active { border:1px solid var(--neon-blue); background:rgba(0,242,234,0.05); }
+        .queue-item img { width:80px; height:45px; border-radius:4px; }
+        #stealth-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:none; align-items:center; justify-content:center; }
+        #stealth-overlay.active { display:flex; }
+        @media (max-width: 900px) { main { flex-direction: column; } #stage { height: 45vh; flex: none; } #sidebar { width: 100%; height: 55vh; flex: none; } }
     </style>
 </head>
 <body>
     <header>
-        <div class="dev-top">Engineered by <span>Salil</span></div>
-        <div class="header-main">
+        <div class="dev-top">Engineered by <span style="color:var(--neon-blue)">Salil</span></div>
+        <div style="display:flex; align-items:center; gap:15px;">
             <div class="brand">TITAN MAX</div>
-            <div class="search-bar">
-                <input type="text" id="query" placeholder="Command song..." value="Arijit Singh Audio">
-                <button class="icon-btn" id="search-btn">🔍</button>
-            </div>
+            <div class="search-bar"><input type="text" id="query" value="Arijit Singh Audio"><button style="background:none;border:none;cursor:pointer;" id="search-btn">🔍</button></div>
         </div>
     </header>
     <main>
         <section id="stage">
-            <div id="player-container"><div id="player-embed"></div></div>
+            <div id="player-container"><div id="player-embed" style="width:100%;height:100%"></div></div>
             <div class="controls-bar">
                 <button class="action-btn" id="full-btn">⛶ FULL</button>
                 <button class="action-btn" id="mute-btn">🔇 MUTE AD</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
                 <button class="action-btn" id="cinema-btn">CINEMA</button>
-                <button class="action-btn" id="lyrics-btn">LYRICS</button>
             </div>
         </section>
-        <aside id="sidebar">
-            <div class="sidebar-header">Operational Queue</div>
-            <div id="queue"></div>
-        </aside>
-        <aside id="lyrics-panel"><h3 style="color:var(--neon-pink); text-align:center;">LYRICS</h3><div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center;">--</div></aside>
+        <aside id="sidebar"><div class="sidebar-header">Operational Queue</div><div id="queue"></div></aside>
     </main>
     <div id="stealth-overlay"><div style="color:#333; font-family:'Orbitron';">DOUBLE TAP TO WAKE</div></div>
     <audio id="ghost-audio" loop playsinline><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
-        let player, state = { playlist: [], index: 0, lastTime: 0 };
+        let player, state = { playlist: [], index: 0, songTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
 
         function onYouTubeIframeAPIReady() { createPlayer(); }
 
-        function createPlayer() {
+        function createPlayer(startTime = 0) {
             if(player && player.destroy) player.destroy();
+            const videoId = state.playlist.length > 0 ? state.playlist[state.index].id.videoId : '';
             player = new YT.Player('player-embed', {
-                height: '100%', width: '100%',
-                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
+                height: '100%', width: '100%', videoId: videoId,
+                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0, 'start': Math.floor(startTime) },
                 events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
         }
@@ -115,36 +78,36 @@
         async function performSearch() {
             const q = document.getElementById('query').value.trim();
             if(!q) return;
-            const queueDiv = document.getElementById('queue');
-            queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Scanning...</div>';
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
                 const data = await res.json();
-                if(data.items) {
-                    state.playlist = data.items; state.index = 0; renderQueue(); loadVideo(0);
-                }
-            } catch(e) { queueDiv.innerHTML = 'Error.'; }
+                if(data.items) { state.playlist = data.items; state.index = 0; renderQueue(); loadVideo(0); }
+            } catch(e) { document.getElementById('queue').innerHTML = 'Search Error.'; }
         }
 
         function loadVideo(i, startTime = 0) {
-            state.index = i;
+            state.index = i; state.songTime = startTime;
             const videoId = state.playlist[i].id.videoId;
-            // The magic fix: Load with a specific start time
             player.loadVideoById({ videoId: videoId, startSeconds: startTime });
             renderQueue();
             updateMediaSession(state.playlist[i]);
-            fetchLyrics(state.playlist[i].snippet.title, state.playlist[i].snippet.channelTitle);
         }
 
         function onPlayerStateChange(e) {
-            if (e.data === 1) ghostAudio.play().catch(e=>{});
-            if (e.data === 0) nextVideo();
-            // Continuously track time so we know where to resume if we skip an ad
-            if (e.data === 1) {
-                setInterval(() => {
-                    if(player && player.getCurrentTime) state.lastTime = player.getCurrentTime();
+            // STATE HANDSHAKE (SYNC LOGIC)
+            if (e.data === YT.PlayerState.PLAYING) {
+                ghostAudio.play().catch(()=>{});
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
+                const tracker = setInterval(() => {
+                    if (player && player.getPlayerState() === 1) state.songTime = player.getCurrentTime();
+                    else clearInterval(tracker);
                 }, 1000);
+            } 
+            else if (e.data === YT.PlayerState.PAUSED) {
+                ghostAudio.pause();
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
             }
+            if (e.data === 0) nextVideo();
         }
 
         function nextVideo() { if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); }
@@ -153,62 +116,32 @@
             document.getElementById('queue').innerHTML = state.playlist.map((v, i) => `
                 <div class="queue-item ${i === state.index ? 'active' : ''}" onclick="loadVideo(${i})">
                     <img src="${v.snippet.thumbnails.default.url}">
-                    <div class="meta"><div class="title">${v.snippet.title}</div></div>
+                    <div style="overflow:hidden;"><div style="font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.snippet.title}</div></div>
                 </div>`).join('');
         }
 
-        async function fetchLyrics(title, artist) {
-            const panel = document.getElementById('lyrics-text'); panel.innerText = "Searching...";
-            const cleanTitle = title.split('-')[1] || title;
-            try {
-                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${cleanTitle}`);
-                const data = await res.json(); panel.innerText = data.lyrics || "Not found.";
-            } catch(e) { panel.innerText = "Unavailable."; }
-        }
-
         function updateMediaSession(item) {
-            if('mediaSession' in navigator) {
+            if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({ title: item.snippet.title, artist: item.snippet.channelTitle });
-                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
-                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+                // SPOTIFY-STYLE ACTIONS
+                navigator.mediaSession.setActionHandler('play', () => { player.playVideo(); });
+                navigator.mediaSession.setActionHandler('pause', () => { player.pauseVideo(); });
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
+                navigator.mediaSession.setActionHandler('previoustrack', () => { if(state.index > 0) loadVideo(state.index-1); });
             }
         }
 
         window.onload = () => {
             document.getElementById('search-btn').onclick = performSearch;
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
-            document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
+            document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
+            document.getElementById('skip-btn').onclick = () => { const time = state.songTime; document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>'; createPlayer(time); };
+            document.getElementById('mute-btn').onclick = () => { if(player.isMuted()) player.unMute(); else player.mute(); };
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
-            
-            // --- UPDATED SKIP LOGIC ---
-            document.getElementById('skip-btn').onclick = () => {
-                const currentTime = state.lastTime; // Remember where we were
-                document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>';
-                createPlayer();
-                // Reload same video but at the stored timestamp
-                setTimeout(() => loadVideo(state.index, currentTime), 1000);
-            };
-
-            const muteBtn = document.getElementById('mute-btn');
-            muteBtn.onclick = () => {
-                if(player.isMuted()) { player.unMute(); muteBtn.classList.remove('active'); }
-                else { player.mute(); muteBtn.classList.add('active'); }
-            };
-
-            document.getElementById('full-btn').onclick = () => {
-                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-                else document.exitFullscreen();
-            };
-
             const stealth = document.getElementById('stealth-overlay');
             document.getElementById('stealth-btn').onclick = () => stealth.classList.add('active');
             let lastTap = 0;
-            stealth.onclick = () => {
-                const now = new Date().getTime();
-                if(now - lastTap < 400) stealth.classList.remove('active');
-                lastTap = now;
-            };
+            stealth.onclick = () => { const now = Date.now(); if(now - lastTap < 400) stealth.classList.remove('active'); lastTap = now; };
         };
     </script>
 </body>
