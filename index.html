@@ -7,7 +7,6 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. DESIGN SYSTEM --- */
         :root {
             --glass: rgba(12, 12, 12, 0.95);
             --glass-border: rgba(255, 255, 255, 0.08);
@@ -15,220 +14,55 @@
             --neon-pink: #ff0055;
             --text-main: #ffffff;
         }
-
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-
         body {
-            margin: 0;
-            font-family: 'Outfit', sans-serif;
-            background: #050505;
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            margin: 0; font-family: 'Outfit', sans-serif; background: #050505;
+            color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
-
-        /* --- 2. HEADER & DEV SIGNATURE --- */
         header {
-            height: 70px;
-            padding: 0 20px;
-            background: var(--glass);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex-shrink: 0;
-            z-index: 1000;
+            height: 70px; padding: 0 20px; background: var(--glass);
+            border-bottom: 1px solid var(--glass-border); display: flex;
+            flex-direction: column; justify-content: center; flex-shrink: 0; z-index: 1000;
         }
-
-        .dev-top {
-            font-size: 0.65rem;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-            text-align: left;
-        }
+        .dev-top { font-size: 0.65rem; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
         .dev-top span { color: var(--neon-blue); font-weight: bold; }
-
-        .header-main {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .header-main { display: flex; align-items: center; gap: 15px; }
         .brand { 
             font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.3rem;
             background: linear-gradient(90deg, #fff, var(--neon-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            white-space: nowrap;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .search-bar {
-            flex: 1;
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border: 1px solid var(--glass-border);
-            padding: 5px 10px;
-        }
-
-        input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 0.95rem;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        button.icon-btn {
-            background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: #aaa;
-        }
-
-        /* --- 3. MAIN LAYOUT --- */
-        main {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* STAGE */
-        #stage {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
-            position: relative;
-        }
-
-        #player-container {
-            width: 100%;
-            max-width: 1000px;
-            aspect-ratio: 16/9;
-            background: #000;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            position: relative;
-        }
-        
+        .search-bar { flex: 1; display: flex; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid var(--glass-border); padding: 5px 10px; }
+        input { width: 100%; background: transparent; border: none; color: white; font-size: 0.95rem; font-family: 'Outfit', sans-serif; }
+        button.icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: #aaa; }
+        main { flex: 1; display: flex; overflow: hidden; position: relative; }
+        #stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); position: relative; }
+        #player-container { width: 100%; max-width: 1000px; aspect-ratio: 16/9; background: #000; box-shadow: 0 0 50px rgba(0,0,0,0.8); position: relative; }
         #player-embed { width: 100%; height: 100%; }
-
-        /* CONTROLS */
-        .controls-bar {
-            margin-top: 15px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 10px;
-        }
-
-        .action-btn {
-            padding: 10px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex; align-items: center; gap: 5px;
-        }
+        .controls-bar { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px; }
+        .action-btn { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.05); color: white; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
         .action-btn:active { background: var(--neon-blue); color: #000; }
-
-        #full-btn { border-color: #fff; }
         #mute-btn { border-color: #ff9900; color: #ff9900; }
         #mute-btn.active { background: #ff9900; color: #000; }
-        #skip-btn { border-color: var(--neon-pink); color: var(--neon-pink); }
-        #stealth-btn { border-color: var(--neon-blue); }
-
-        /* --- 4. SIDEBAR --- */
-        #sidebar {
-            width: 320px;
-            background: #080808;
-            border-left: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-            height: 100%;
-        }
-
-        .sidebar-header {
-            padding: 15px;
-            font-size: 0.75rem;
-            color: #888;
-            text-transform: uppercase;
-            border-bottom: 1px solid #222;
-            background: #111;
-            flex-shrink: 0;
-        }
-
-        #queue {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
+        #skip-btn { border-color: var(--neon-pink); color: var(--neon-pink); font-weight: bold; }
+        #sidebar { width: 320px; background: #080808; border-left: 1px solid var(--glass-border); display: flex; flex-direction: column; height: 100%; }
+        .sidebar-header { padding: 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; border-bottom: 1px solid #222; background: #111; }
+        #queue { flex: 1; overflow-y: auto; padding: 10px; }
         #queue::-webkit-scrollbar { width: 6px; }
-        #queue::-webkit-scrollbar-track { background: #000; }
         #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-        .queue-item {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: 0.2s;
-        }
-        .queue-item:hover { background: #1a1a1a; }
-        .queue-item.active { background: rgba(0, 242, 234, 0.08); border-color: var(--neon-blue); }
-
-        .queue-item img { width: 80px; height: 45px; object-fit: cover; border-radius: 4px; background: #222; }
-        .queue-item .meta { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        .queue-item { display: flex; gap: 10px; padding: 10px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .queue-item.active { background: rgba(0, 242, 234, 0.08); border-color: var(--neon-blue); border: 1px solid; }
+        .queue-item img { width: 80px; height: 45px; object-fit: cover; border-radius: 4px; }
+        .queue-item .meta { overflow: hidden; }
         .queue-item .title { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .queue-item .artist { font-size: 0.7rem; color: #777; }
-
-        @media (max-width: 900px) {
-            main { flex-direction: column; }
-            #stage { height: 45vh; flex: none; }
-            #sidebar { width: 100%; height: 55vh; flex: none; }
-            .controls-bar { margin-top: 5px; padding: 5px; }
-        }
-
-        /* --- 5. EXTRAS --- */
-        #lyrics-panel {
-            position: absolute; top: 0; right: 0; bottom: 0; width: 320px;
-            background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink);
-            transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto;
-        }
+        #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
         #lyrics-panel.show { transform: translateX(0); }
-
-        #stealth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 9999; display: none;
-            align-items: center; justify-content: center;
-        }
+        #stealth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: none; align-items: center; justify-content: center; }
         #stealth-overlay.active { display: flex; }
-        .stealth-hint { color: #333; font-size: 0.8rem; font-family: 'Orbitron'; animation: fadeOut 4s forwards; }
-        @keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
-
-        /* Cinema Mode */
-        body.cinema-mode #sidebar { display: none; }
-        body.cinema-mode header { display: none; }
-        body.cinema-mode #stage { height: 100vh; }
+        @media (max-width: 900px) { main { flex-direction: column; } #stage { height: 45vh; flex: none; } #sidebar { width: 100%; height: 55vh; flex: none; } #lyrics-panel { width: 100%; } }
     </style>
 </head>
 <body>
-
     <header>
         <div class="dev-top">Engineered by <span>Salil</span></div>
         <div class="header-main">
@@ -239,15 +73,11 @@
             </div>
         </div>
     </header>
-
     <main>
         <section id="stage">
-            <div id="player-container">
-                <div id="player-embed"></div>
-            </div>
-            
+            <div id="player-container"><div id="player-embed"></div></div>
             <div class="controls-bar">
-                <button class="action-btn" id="full-btn">⛶ FULLSCREEN</button>
+                <button class="action-btn" id="full-btn">⛶ FULL</button>
                 <button class="action-btn" id="mute-btn">🔇 MUTE AD</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
@@ -255,32 +85,18 @@
                 <button class="action-btn" id="lyrics-btn">LYRICS</button>
             </div>
         </section>
-
         <aside id="sidebar">
             <div class="sidebar-header">Operational Queue</div>
-            <div id="queue">
-                <div style="padding:20px; text-align:center; color:#555;">Initializing...</div>
-            </div>
+            <div id="queue"></div>
         </aside>
-
-        <aside id="lyrics-panel">
-            <h3 style="color:var(--neon-pink); text-align:center; margin-top:0;">LYRICS</h3>
-            <div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center; font-size: 1rem;">--</div>
-        </aside>
+        <aside id="lyrics-panel"><h3 style="color:var(--neon-pink); text-align:center;">LYRICS</h3><div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center;">--</div></aside>
     </main>
-
-    <div id="stealth-overlay">
-        <div class="stealth-hint">DOUBLE TAP TO WAKE</div>
-    </div>
-
-    <audio id="ghost-audio" loop playsinline>
-        <source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg">
-    </audio>
+    <div id="stealth-overlay"><div style="color:#333; font-family:'Orbitron';">DOUBLE TAP TO WAKE</div></div>
+    <audio id="ghost-audio" loop playsinline><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
-        let player;
-        let state = { playlist: [], index: 0 };
+        let player, state = { playlist: [], index: 0, lastTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
 
         function onYouTubeIframeAPIReady() { createPlayer(); }
@@ -289,93 +105,74 @@
             if(player && player.destroy) player.destroy();
             player = new YT.Player('player-embed', {
                 height: '100%', width: '100%',
-                playerVars: { 'autoplay': 0, 'controls': 1, 'playsinline': 1, 'rel': 0, 'iv_load_policy': 3 },
+                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
                 events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
         }
 
-        function onPlayerReady() {
-            performSearch();
-        }
+        function onPlayerReady() { if(state.playlist.length === 0) performSearch(); }
 
         async function performSearch() {
             const q = document.getElementById('query').value.trim();
             if(!q) return;
             const queueDiv = document.getElementById('queue');
             queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Scanning...</div>';
-            
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
             try {
-                const res = await fetch(url);
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
                 const data = await res.json();
-                if(data.items && data.items.length > 0) {
-                    state.playlist = data.items;
-                    state.index = 0;
-                    renderQueue();
-                    loadVideo(0);
-                    ghostAudio.play().catch(e => {});
-                } else {
-                    queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No results.</div>';
+                if(data.items) {
+                    state.playlist = data.items; state.index = 0; renderQueue(); loadVideo(0);
                 }
-            } catch(e) { queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">Error.</div>'; }
+            } catch(e) { queueDiv.innerHTML = 'Error.'; }
         }
 
-        function loadVideo(i) {
+        function loadVideo(i, startTime = 0) {
             state.index = i;
-            const item = state.playlist[i];
-            if(player && player.loadVideoById) player.loadVideoById(item.id.videoId);
+            const videoId = state.playlist[i].id.videoId;
+            // The magic fix: Load with a specific start time
+            player.loadVideoById({ videoId: videoId, startSeconds: startTime });
             renderQueue();
-            if(item.snippet) fetchLyrics(item.snippet.title, item.snippet.channelTitle);
-            updateMediaSession(item);
-        }
-
-        function updateMediaSession(item) {
-            if('mediaSession' in navigator && item.snippet) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: item.snippet.title, artist: item.snippet.channelTitle,
-                    artwork: [{ src: item.snippet.thumbnails.medium.url }]
-                });
-                navigator.mediaSession.setActionHandler('play', () => { player.playVideo(); ghostAudio.play(); });
-                navigator.mediaSession.setActionHandler('pause', () => { player.pauseVideo(); ghostAudio.pause(); });
-                navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
-            }
-        }
-
-        function renderQueue() {
-            const list = document.getElementById('queue');
-            list.innerHTML = state.playlist.map((v, i) => `
-                <div class="queue-item ${i === state.index ? 'active' : ''}" onclick="loadVideo(${i})">
-                    <img src="${v.snippet.thumbnails.default.url}">
-                    <div class="meta"><div class="title">${v.snippet.title}</div><div class="artist">${v.snippet.channelTitle}</div></div>
-                </div>
-            `).join('');
-            const active = document.querySelector('.queue-item.active');
-            if(active) active.scrollIntoView({behavior: 'smooth', block: 'center'});
+            updateMediaSession(state.playlist[i]);
+            fetchLyrics(state.playlist[i].snippet.title, state.playlist[i].snippet.channelTitle);
         }
 
         function onPlayerStateChange(e) {
-            if (e.data === 1) ghostAudio.play().catch(e=>{}); 
-            if (e.data === 2) ghostAudio.pause(); 
-            if (e.data === 0) nextVideo(); 
+            if (e.data === 1) ghostAudio.play().catch(e=>{});
+            if (e.data === 0) nextVideo();
+            // Continuously track time so we know where to resume if we skip an ad
+            if (e.data === 1) {
+                setInterval(() => {
+                    if(player && player.getCurrentTime) state.lastTime = player.getCurrentTime();
+                }, 1000);
+            }
         }
 
         function nextVideo() { if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); }
 
-        async function fetchLyrics(title, channelName) {
-            const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Cleaning Data...";
-            let cleanTitle = title.toLowerCase().replace(/\(.*\)|\[.*\]/g, "").replace(/official video|audio/g, "").trim();
-            let artist = channelName ? channelName.replace("VEVO", "").trim() : "";
-            let song = cleanTitle;
-            if (cleanTitle.includes("-")) {
-                let parts = cleanTitle.split("-");
-                artist = parts[0].trim(); song = parts[1].trim();
-            }
+        function renderQueue() {
+            document.getElementById('queue').innerHTML = state.playlist.map((v, i) => `
+                <div class="queue-item ${i === state.index ? 'active' : ''}" onclick="loadVideo(${i})">
+                    <img src="${v.snippet.thumbnails.default.url}">
+                    <div class="meta"><div class="title">${v.snippet.title}</div></div>
+                </div>`).join('');
+        }
+
+        async function fetchLyrics(title, artist) {
+            const panel = document.getElementById('lyrics-text'); panel.innerText = "Searching...";
+            const cleanTitle = title.split('-')[1] || title;
             try {
-                let res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
-                let data = await res.json();
-                panel.innerText = data.lyrics || "Lyrics not found.";
-            } catch(e) { panel.innerText = "Lyrics unavailable."; }
+                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${cleanTitle}`);
+                const data = await res.json(); panel.innerText = data.lyrics || "Not found.";
+            } catch(e) { panel.innerText = "Unavailable."; }
+        }
+
+        function updateMediaSession(item) {
+            if('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({ title: item.snippet.title, artist: item.snippet.channelTitle });
+                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
+                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+                navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
+            }
         }
 
         window.onload = () => {
@@ -383,41 +180,35 @@
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
-
+            
+            // --- UPDATED SKIP LOGIC ---
             document.getElementById('skip-btn').onclick = () => {
+                const currentTime = state.lastTime; // Remember where we were
                 document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>';
                 createPlayer();
-                setTimeout(() => loadVideo(state.index), 1000);
+                // Reload same video but at the stored timestamp
+                setTimeout(() => loadVideo(state.index, currentTime), 1000);
             };
 
             const muteBtn = document.getElementById('mute-btn');
             muteBtn.onclick = () => {
-                if(player.isMuted()) {
-                    player.unMute(); muteBtn.classList.remove('active'); muteBtn.innerText = "🔇 MUTE AD";
-                } else {
-                    player.mute(); muteBtn.classList.add('active'); muteBtn.innerText = "🔊 UNMUTE";
-                }
+                if(player.isMuted()) { player.unMute(); muteBtn.classList.remove('active'); }
+                else { player.mute(); muteBtn.classList.add('active'); }
             };
 
             document.getElementById('full-btn').onclick = () => {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen();
-                } else {
-                    document.exitFullscreen();
-                }
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                else document.exitFullscreen();
             };
 
-            const stealthOverlay = document.getElementById('stealth-overlay');
-            document.getElementById('stealth-btn').onclick = async () => {
-                stealthOverlay.classList.add('active');
-                if(navigator.wakeLock) await navigator.wakeLock.request('screen');
-            };
+            const stealth = document.getElementById('stealth-overlay');
+            document.getElementById('stealth-btn').onclick = () => stealth.classList.add('active');
             let lastTap = 0;
-            stealthOverlay.addEventListener('click', (e) => {
-                const currentTime = new Date().getTime();
-                if (currentTime - lastTap < 400 && currentTime - lastTap > 0) stealthOverlay.classList.remove('active');
-                lastTap = currentTime;
-            });
+            stealth.onclick = () => {
+                const now = new Date().getTime();
+                if(now - lastTap < 400) stealth.classList.remove('active');
+                lastTap = now;
+            };
         };
     </script>
 </body>
