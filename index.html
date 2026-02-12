@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARBES TITAN | Salil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TITAN MAX | Salil</title>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. DESIGN SYSTEM (Premium Glassmorphism) --- */
+        /* --- 1. TITAN MAX DESIGN SYSTEM --- */
         :root {
-            --bg-deep: #050505;
-            --glass: rgba(30, 30, 30, 0.6);
+            --glass: rgba(10, 10, 10, 0.8);
             --glass-border: rgba(255, 255, 255, 0.1);
-            --accent: #00f2ea; /* Cyber Cyan */
-            --accent-glow: rgba(0, 242, 234, 0.4);
+            --neon-blue: #00f2ea;
+            --neon-pink: #ff0055;
+            --titan-gold: #ffd700;
             --text-main: #ffffff;
-            --text-dim: #a0a0a0;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -23,7 +22,12 @@
         body {
             margin: 0;
             font-family: 'Outfit', sans-serif;
-            background: radial-gradient(circle at top right, #1a1a2e, var(--bg-deep));
+            background: #050505;
+            /* Subtle animated mesh gradient */
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
             color: var(--text-main);
             height: 100vh;
             display: flex;
@@ -35,215 +39,235 @@
         header {
             padding: 15px 25px;
             background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             gap: 20px;
-            position: relative;
             z-index: 1000;
+            flex-shrink: 0;
         }
 
         .brand { 
-            font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; 
-            background: linear-gradient(90deg, #fff, var(--accent));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem; 
+            font-weight: 900; 
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--neon-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             user-select: none;
         }
+        
+        .logo-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 5px var(--neon-blue));
+        }
 
         .search-bar {
             flex: 1;
-            max-width: 600px;
             display: flex;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
             border: 1px solid var(--glass-border);
+            padding: 8px 15px;
             transition: 0.3s;
-            position: relative;
         }
 
         .search-bar:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
+            background: rgba(0, 0, 0, 0.6);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 234, 0.2);
         }
 
         input {
             width: 100%;
             background: transparent;
             border: none;
-            padding: 12px 15px;
             color: white;
-            font-family: 'Outfit', sans-serif;
             font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
         }
 
         button.icon-btn {
             background: transparent;
             border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            padding: 0 15px;
             font-size: 1.2rem;
+            cursor: pointer;
+            color: #aaa;
             transition: 0.2s;
         }
-        button.icon-btn:hover { color: var(--accent); }
+        button.icon-btn:hover { color: #fff; transform: scale(1.1); }
 
-        /* --- 3. MAIN LAYOUT --- */
+        /* --- 3. MAIN LAYOUT (FIXED SCROLLING) --- */
         main {
             display: flex;
             flex: 1;
-            overflow: hidden;
+            overflow: hidden; /* Critical for inner scrolling */
             position: relative;
-            z-index: 1;
         }
 
-        /* Player Section */
+        /* STAGE */
         #stage {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #000;
             position: relative;
-            transition: all 0.5s ease;
+            background: rgba(0,0,0,0.3);
         }
 
         #player-wrapper {
             width: 90%;
             max-width: 1100px;
             aspect-ratio: 16/9;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-            border: 1px solid var(--glass-border);
-            transition: 0.5s;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #000;
         }
 
-        /* Controls Bar (Under Video) */
+        /* CONTROLS */
         .controls-bar {
-            margin-top: 20px;
+            margin-top: 30px;
             display: flex;
             gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
         }
 
         .action-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 24px;
+            border-radius: 6px;
             border: 1px solid var(--glass-border);
-            background: var(--glass);
+            background: rgba(255, 255, 255, 0.05);
             color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
             cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             transition: 0.3s;
+            text-transform: uppercase;
         }
 
-        .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
-        .action-btn.active { background: var(--accent); color: #000; font-weight: bold; box-shadow: 0 0 15px var(--accent-glow); }
+        .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-blue); }
+        .action-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; box-shadow: 0 0 20px rgba(0, 242, 234, 0.4); }
 
-        /* DEVELOPER BADGE (NEW) */
+        /* DEVELOPER BADGE */
         .dev-badge {
             position: absolute;
             bottom: 20px;
             right: 20px;
             font-size: 0.75rem;
-            color: var(--text-dim);
-            background: rgba(0,0,0,0.6);
-            padding: 5px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.4);
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 1px;
             pointer-events: none;
-            user-select: none;
-            z-index: 5;
         }
-        .dev-badge span { color: var(--accent); font-weight: bold; }
+        .dev-badge span { color: var(--neon-blue); font-weight: bold; }
 
-        /* Sidebar (Playlist) */
+        /* --- 4. SIDEBAR (SCROLL ENGINE FIXED) --- */
         #sidebar {
-            width: 350px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
+            width: 380px;
+            background: rgba(15, 15, 15, 0.95);
             border-left: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
-            transition: transform 0.4s ease;
+            transition: 0.4s;
             z-index: 10;
         }
 
+        .sidebar-header {
+            padding: 15px 20px;
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+
+        /* The container for the list items - This is what scrolls */
+        #queue {
+            flex: 1;
+            overflow-y: auto; /* Force vertical scroll */
+            padding: 10px;
+        }
+
+        /* Custom Scrollbar Styling */
+        #queue::-webkit-scrollbar { width: 6px; }
+        #queue::-webkit-scrollbar-track { background: #111; }
+        #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        #queue::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+
         .queue-item {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             padding: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 5px;
             cursor: pointer;
             transition: 0.2s;
+            border: 1px solid transparent;
         }
 
         .queue-item:hover { background: rgba(255,255,255,0.05); }
-        .queue-item.active { background: rgba(0, 242, 234, 0.1); border-left: 3px solid var(--accent); }
+        .queue-item.active { 
+            background: rgba(0, 242, 234, 0.05); 
+            border-color: rgba(0, 242, 234, 0.3);
+        }
         
-        .queue-item img { width: 100px; height: 56px; object-fit: cover; border-radius: 6px; }
+        .queue-item img { width: 100px; height: 56px; object-fit: cover; border-radius: 4px; }
         .queue-item .meta { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        .queue-item .title { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .queue-item .artist { font-size: 0.75rem; color: var(--text-dim); }
+        .queue-item .title { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item .artist { font-size: 0.8rem; color: #777; }
 
-        /* --- 4. LYRICS OVERLAY --- */
+        /* --- 5. LYRICS PANEL --- */
         #lyrics-panel {
             position: absolute;
             top: 0; right: 0; bottom: 0;
-            width: 350px;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--glass-border);
-            padding: 30px;
+            width: 380px;
+            background: rgba(5, 5, 5, 0.98);
+            border-left: 1px solid var(--neon-pink);
+            padding: 40px 30px;
+            transform: translateX(100%);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
             overflow-y: auto;
-            transform: translateX(100%); /* Hidden by default */
-            transition: transform 0.4s ease;
-            z-index: 20;
         }
-
         #lyrics-panel.show { transform: translateX(0); }
-        
-        .lyrics-content {
-            white-space: pre-wrap;
-            line-height: 1.8;
-            font-size: 1.1rem;
-            color: #ddd;
-            text-align: center;
-        }
 
-        /* --- 5. CINEMA MODE STATES --- */
-        body.cinema-mode #sidebar { transform: translateX(100%); width: 0; display: none; }
+        /* CINEMA MODE */
+        body.cinema-mode #sidebar { width: 0; opacity: 0; }
         body.cinema-mode #stage { width: 100vw; }
         body.cinema-mode #player-wrapper { width: 100%; height: 100%; max-width: none; border-radius: 0; border: none; }
-        body.cinema-mode header { display: none; } /* Immersion */
-        body.cinema-mode .dev-badge { display: none; }
-        body.cinema-mode .controls-bar { position: absolute; bottom: 30px; z-index: 50; opacity: 0; transition: opacity 0.3s; }
+        body.cinema-mode header, body.cinema-mode .dev-badge { display: none; }
+        body.cinema-mode .controls-bar { position: absolute; bottom: 40px; opacity: 0; transition: 0.3s; z-index: 99; }
         body.cinema-mode #stage:hover .controls-bar { opacity: 1; }
 
-        /* Responsive */
-        @media (max-width: 800px) {
+        /* MOBILE */
+        @media (max-width: 900px) {
             main { flex-direction: column; }
             #sidebar { width: 100%; height: 40%; }
             #lyrics-panel { width: 100%; transform: translateY(100%); }
             #lyrics-panel.show { transform: translateY(0); }
-            .dev-badge { display: none; } /* Hide on mobile to save space */
+            header { padding: 10px 15px; }
+            .brand { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">JARBES <span>TITAN</span></div>
+        <div class="brand">
+            <span class="logo-icon">⚡</span> TITAN MAX
+        </div>
         <div class="search-bar">
-            <input type="text" id="query" placeholder="Search Song..." value="Arijit Singh">
+            <input type="text" id="query" placeholder="Waiting for command...">
             <button class="icon-btn" id="search-btn">🔍</button>
         </div>
     </header>
@@ -255,108 +279,91 @@
             </div>
 
             <div class="controls-bar">
-                <button class="action-btn" id="cinema-btn">
-                    <span>🔲</span> Cinema Mode
-                </button>
-                <button class="action-btn" id="lyrics-btn">
-                    <span>🎤</span> Lyrics
-                </button>
-                <button class="action-btn" onclick="document.body.requestFullscreen()">
-                    <span>⛶</span> Fullscreen
-                </button>
+                <button class="action-btn" id="cinema-btn">Cinema Mode</button>
+                <button class="action-btn" id="lyrics-btn">Lyrics</button>
+                <button class="action-btn" onclick="toggleFullscreen()">Fullscreen</button>
             </div>
             
-            <div class="dev-badge">Engineered by <span>Salil</span></div>
+            <div class="dev-badge">System Architect: <span>Salil</span></div>
         </section>
 
         <aside id="lyrics-panel">
-            <h3 style="color:var(--accent); text-align:center; margin-top:0;">LYRICS</h3>
-            <div id="lyrics-text" class="lyrics-content">Searching...</div>
+            <h2 style="color:var(--neon-pink); text-align:center; font-family:'Orbitron',sans-serif; margin-bottom:30px;">LYRICS ENGINE</h2>
+            <div id="lyrics-text" style="line-height:1.8; color:#ccc; white-space: pre-wrap; text-align:center; font-size: 1.1rem;">
+                -- Standby --
+            </div>
         </aside>
 
         <aside id="sidebar">
-            <div style="padding:15px; font-weight:bold; color:var(--text-dim); border-bottom:1px solid #333;">NEXT UP</div>
-            <div id="queue"></div>
+            <div class="sidebar-header">Operational Queue</div>
+            <div id="queue">
+                <div style="padding:40px 20px; text-align:center; color:#444;">
+                    System Idle.<br>Enter a search query to initiate Titan Max.
+                </div>
+            </div>
         </aside>
     </main>
 
+    <audio id="ghost-audio" loop>
+        <source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg">
+    </audio>
+
     <script>
-        console.log("%c System Architect: Salil ", "background: #00f2ea; color: #000; font-weight: bold; padding: 5px; border-radius: 4px;");
-
-        // --- CONFIG ---
+        // --- 1. CONFIGURATION ---
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
-        
-        // --- STATE ---
         let player;
-        let state = {
-            playlist: [],
-            index: 0,
-            lyricsOpen: false,
-            cinemaMode: false
-        };
+        let state = { playlist: [], index: 0, lyricsOpen: false, cinemaMode: false };
+        const ghostAudio = document.getElementById('ghost-audio');
 
-        // --- YOUTUBE INIT ---
+        // --- 2. INITIALIZATION ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '100%', width: '100%',
-                playerVars: { 'autoplay': 1, 'controls': 1, 'modestbranding': 1, 'rel': 0, 'playsinline': 1 },
-                events: { 'onStateChange': onPlayerStateChange, 'onError': onPlayerError }
+                playerVars: { 'autoplay': 1, 'controls': 1, 'modestbranding': 1, 'playsinline': 1, 'rel': 0 },
+                events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
-            setTimeout(() => performSearch(), 1000); // Auto-start
+            // NOTE: Auto-search REMOVED as requested. Waiting for user input.
         }
 
-        // --- SEARCH ENGINE ---
+        // --- 3. SEARCH ENGINE ---
         async function performSearch() {
-            const queryInput = document.getElementById('query');
-            const query = queryInput.value.trim();
-            if(!query) return;
+            const q = document.getElementById('query').value.trim();
+            if(!q) return;
 
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query + " audio")}&type=video&key=${API_KEY}`;
-
+            // Adding "audio" finds better music matches, but works for anything
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
+            
             try {
+                // Show loading state
+                document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center; color:#666;">Scanning database...</div>';
+
                 const res = await fetch(url);
                 const data = await res.json();
                 
-                if(data.error) {
-                    alert("API Error: " + data.error.message);
-                    return;
-                }
-
-                if(data.items) {
+                if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
+                    
+                    // Trigger ghost audio for background play capability
+                    ghostAudio.play().catch(e => console.log("Ghost Audio needs interaction"));
+                } else {
+                    document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
                 }
-            } catch(e) { console.log(e); }
+            } catch(e) { 
+                alert("Connection Error. Check API Key or Internet."); 
+            }
         }
 
-        // --- CORE PLAYER LOGIC ---
+        // --- 4. PLAYER LOGIC ---
         function loadVideo(i) {
             state.index = i;
-            const video = state.playlist[i];
-            const videoId = video.id.videoId;
-            
-            if(player && player.loadVideoById) {
-                player.loadVideoById(videoId);
-            }
+            const item = state.playlist[i];
+            player.loadVideoById(item.id.videoId);
             renderQueue();
-            
-            fetchLyrics(video.snippet.title);
-
-            // Media Session API for Background Play
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: video.snippet.title,
-                    artist: video.snippet.channelTitle,
-                    artwork: [{ src: video.snippet.thumbnails.high.url, sizes: '480x360', type: 'image/jpeg' }]
-                });
-                
-                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
-                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
-                navigator.mediaSession.setActionHandler('previoustrack', () => loadVideo(state.index - 1));
-                navigator.mediaSession.setActionHandler('nexttrack', () => loadVideo(state.index + 1));
-            }
+            fetchLyrics(item.snippet.title);
+            updateMediaSession(item);
         }
 
         function renderQueue() {
@@ -371,38 +378,71 @@
                 </div>
             `).join('');
             
+            // Auto-scroll to active item
             const active = document.querySelector('.queue-item.active');
             if(active) active.scrollIntoView({behavior: 'smooth', block: 'nearest'});
         }
 
         function onPlayerStateChange(e) {
             if (e.data === 0) nextVideo(); // Ended
-        }
-        function onPlayerError() { nextVideo(); } // Skip restricted
-        function nextVideo() { 
-            if (state.index < state.playlist.length - 1) loadVideo(state.index + 1); 
+            if (e.data === 1) ghostAudio.play(); // Ensure background audio is active
         }
 
-        // --- LYRICS ENGINE ---
+        function nextVideo() {
+            if (state.index < state.playlist.length - 1) loadVideo(state.index + 1);
+        }
+
+        // --- 5. LYRICS ENGINE ---
         async function fetchLyrics(rawTitle) {
             const panel = document.getElementById('lyrics-text');
             panel.innerText = "Searching lyrics...";
-            const parts = rawTitle.split('-');
-            let artist = parts[0] ? parts[0].trim() : "";
-            let song = parts[1] ? parts[1].replace(/\(.*\)/g, "").trim() : rawTitle; 
+            
+            // Clean title for better search accuracy
+            let cleanTitle = rawTitle.replace(/\(.*\)|\[.*\]/g, "").replace(/official video|lyric video|audio/gi, "").trim();
+            let artist = "", song = cleanTitle;
+            
+            if (cleanTitle.includes("-")) {
+                const parts = cleanTitle.split("-");
+                artist = parts[0].trim();
+                song = parts[1].trim();
+            }
 
             try {
-                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s Timeout
+                
+                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 const data = await res.json();
-                if(data.lyrics) {
+                
+                if (data.lyrics) {
                     panel.innerText = data.lyrics;
                 } else {
-                    panel.innerText = "Lyrics not found for this track.";
+                    panel.innerText = `Lyrics not found for:\n"${song}"\n\n(Try searching just the song name)`;
                 }
-            } catch(e) { panel.innerText = "Lyrics unavailable."; }
+            } catch (e) {
+                panel.innerText = "Lyrics unavailable or timed out.";
+            }
         }
 
-        // --- UI TOGGLES ---
+        // --- 6. BACKGROUND PLAY HELPER ---
+        function updateMediaSession(item) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: item.snippet.title,
+                    artist: item.snippet.channelTitle,
+                    artwork: [{ src: item.snippet.thumbnails.high.url, sizes: '480x360', type: 'image/jpeg' }]
+                });
+                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
+                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+                navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
+                navigator.mediaSession.setActionHandler('previoustrack', () => {
+                    if(state.index > 0) loadVideo(state.index - 1);
+                });
+            }
+        }
+
+        // --- 7. UI CONTROLS ---
         document.getElementById('search-btn').onclick = performSearch;
         document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
 
@@ -410,30 +450,27 @@
             state.lyricsOpen = !state.lyricsOpen;
             const panel = document.getElementById('lyrics-panel');
             const btn = document.getElementById('lyrics-btn');
-            
-            if(state.lyricsOpen) {
-                panel.classList.add('show');
-                btn.classList.add('active');
-            } else {
-                panel.classList.remove('show');
-                btn.classList.remove('active');
-            }
+            panel.classList.toggle('show', state.lyricsOpen);
+            btn.classList.toggle('active', state.lyricsOpen);
         };
 
         document.getElementById('cinema-btn').onclick = () => {
             state.cinemaMode = !state.cinemaMode;
+            document.body.classList.toggle('cinema-mode', state.cinemaMode);
             const btn = document.getElementById('cinema-btn');
-            
-            if(state.cinemaMode) {
-                document.body.classList.add('cinema-mode');
-                btn.classList.add('active');
-                btn.innerText = "❌ Exit";
-            } else {
-                document.body.classList.remove('cinema-mode');
-                btn.classList.remove('active');
-                btn.innerHTML = "<span>🔲</span> Cinema Mode";
-            }
+            btn.classList.toggle('active', state.cinemaMode);
+            btn.innerText = state.cinemaMode ? "EXIT CINEMA" : "CINEMA MODE";
         };
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.body.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
     </script>
 </body>
 </html>
