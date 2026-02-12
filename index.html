@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>TITAN MAX | Salil</title>
+    <title>TITAN MAX | API-LESS GHOST</title>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <style>
@@ -42,11 +41,7 @@
         #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); transition: all 0.3s ease; position: relative; }
         #player-embed { width:100%; height:100%; }
         
-        #player-container.mini-float {
-            position: fixed; bottom: 40px; right: 20px; width: 220px; z-index: 20000;
-            border: 2px solid var(--neon-blue); border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-        }
+        #player-container.mini-float { position: fixed; bottom: 40px; right: 20px; width: 220px; z-index: 20000; border: 2px solid var(--neon-blue); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
 
         .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:5px; z-index: 2; }
         .action-btn { padding:10px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:white; font-family:'Orbitron',sans-serif; font-size:0.7rem; cursor:pointer; }
@@ -67,13 +62,10 @@
         
         #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 350px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
         #lyrics-panel.show { transform: translateX(0); }
+        
+        #sys-status { position: fixed; bottom: 0; left: 0; width: 100%; height: 20px; background: #000; color: #00ff88; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; z-index: 6000; pointer-events: none; }
 
-        @media (max-width: 900px) {
-            main { flex-direction: column; }
-            #stage { height: 40vh; flex: none; }
-            #sidebar { width: 100%; height: 60vh; flex: none; }
-            #lyrics-panel { width: 100%; }
-        }
+        @media (max-width: 900px) { main { flex-direction: column; } #stage { height: 40vh; flex: none; } #sidebar { width: 100%; height: 60vh; flex: none; } #lyrics-panel { width: 100%; } }
     </style>
 </head>
 <body>
@@ -83,7 +75,7 @@
             <div class="brand">TITAN</div>
             <form id="search-form" onsubmit="event.preventDefault(); performSearch();">
                 <div class="search-bar">
-                    <input type="text" id="query" placeholder="Type here..." value="Arijit Singh Audio" autocomplete="off" onclick="this.focus();">
+                    <input type="text" id="query" placeholder="Global Search..." value="Arijit Singh Audio" autocomplete="off" onclick="this.focus();">
                     <button type="submit" class="search-btn-icon">🔍</button>
                 </div>
             </form>
@@ -103,18 +95,15 @@
             </div>
         </section>
         <aside id="sidebar"><div class="sidebar-header">Operational Queue</div><div id="queue"></div></aside>
-        <aside id="lyrics-panel">
-            <h3 style="color:var(--neon-pink); text-align:center;">NEURAL LYRICS</h3>
-            <div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center;">--</div>
-        </aside>
+        <aside id="lyrics-panel"><h3 style="color:var(--neon-pink); text-align:center;">NEURAL LYRICS</h3><div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center;">--</div></aside>
     </main>
-    
     <div id="stealth-overlay"><div class="stealth-hint">DOUBLE TAP TO WAKE</div></div>
+    <div id="sys-status">API-LESS CORE: ACTIVE (CLOUDFLARE)</div>
     <audio id="ghost-audio" loop playsinline style="display:none;"><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
-        // --- NEW KEY INJECTED ---
-        const API_KEY = 'AIzaSyBLSaRU_KnR2pwqZeEiZAhDDyzhBJ5q6do'; 
+        // --- CLOUDFLARE GHOST ENGINE URL ---
+        const SEARCH_ENGINE_URL = 'https://titan-search-engine.saliljha523.workers.dev/';
         
         let player, state = { playlist: [], index: 0, songTime: 0 };
         const ghostAudio = document.getElementById('ghost-audio');
@@ -125,7 +114,7 @@
                 playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
                 events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
-            setTimeout(performSearch, 1000);
+            setTimeout(performSearch, 1500);
         }
 
         async function performSearch() {
@@ -134,44 +123,24 @@
             if(!q) return;
             
             const queueDiv = document.getElementById('queue');
-            queueDiv.style.opacity = '0.5'; 
+            queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">Scanning Workers...</div>';
             
             try {
-                // Using new key
-                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
-                
-                const res = await fetch(url);
+                // TALK TO YOUR CLOUDFLARE WORKER INSTEAD OF GOOGLE
+                const res = await fetch(`${SEARCH_ENGINE_URL}?q=${encodeURIComponent(q)}`);
                 const data = await res.json();
-                queueDiv.style.opacity = '1'; 
-
-                // --- DIAGNOSTIC ERROR DISPLAY ---
-                if(data.error) {
-                    console.error(`Titan Error: ${data.error.code} - ${data.error.message}`);
-                    const reason = data.error.errors[0].reason;
-                    
-                    let helpMsg = "Unknown Error";
-                    if(data.error.code === 403) helpMsg = "ACCESS DENIED. Go to Google Cloud > Credentials > Key > Set 'Restrictions' to 'None'.";
-                    if(data.error.code === 400) helpMsg = "BAD REQUEST. The API Key is invalid or malformed.";
-
-                    queueDiv.innerHTML = `<div style="padding:20px;text-align:center;color:#ff4444;">
-                        ERROR ${data.error.code}<br>
-                        <span style="font-size:0.7rem;">${reason}</span><br><br>
-                        <span style="font-size:0.6rem;color:#ccc;border:1px solid #333;padding:5px;display:inline-block;">${helpMsg}</span>
-                    </div>`;
-                    return;
-                }
-
+                
                 if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
                 } else {
-                    queueDiv.innerHTML = '<div style="padding:20px;text-align:center;">No results found.</div>';
+                    queueDiv.innerHTML = '<div style="padding:20px;text-align:center;">Uplink Clear: No Videos Found.</div>';
                 }
             } catch(e) { 
-                console.error("Network Error:", e);
-                queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:red;">Network Error. Check Internet.</div>';
+                console.error("Worker Error:", e);
+                queueDiv.innerHTML = '<div style="padding:20px;text-align:center;color:red;">Worker Connection Failed. Check Cloudflare Dashboard.</div>';
             }
         }
 
@@ -186,7 +155,7 @@
                 const item = state.playlist[i];
                 if(item.snippet) {
                     updateMediaSession(item);
-                    fetchSmartLyrics(item.snippet.title, item.snippet.channelTitle);
+                    fetchSmartLyrics(item.snippet.title);
                 }
             }
         }
@@ -219,20 +188,18 @@
 
         function updateMediaSession(item) {
             if ('mediaSession' in navigator) {
-                const artwork = item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url;
-                navigator.mediaSession.metadata = new MediaMetadata({ title: item.snippet.title, artist: item.snippet.channelTitle, artwork: [{ src: artwork }] });
+                const artwork = item.snippet.thumbnails.default.url;
+                navigator.mediaSession.metadata = new MediaMetadata({ title: item.snippet.title, artist: "YouTube", artwork: [{ src: artwork }] });
                 navigator.mediaSession.setActionHandler('play', () => player.playVideo());
                 navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
-                navigator.mediaSession.setActionHandler('previoustrack', () => { if(state.index>0) loadVideo(state.index-1); });
             }
         }
 
-        async function fetchSmartLyrics(title, channel) {
+        async function fetchSmartLyrics(title) {
             const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Scanning...";
+            panel.innerText = "Scanning Lyrics...";
             const cleanTitle = title.toLowerCase().replace(/\(.*\)/g, "").replace(/\[.*\]/g, "").replace(/official video|lyric video|audio|hd|4k|hq/g, "").replace(/ft\.|feat\.|starring/g, "").replace(/[|:;"]/g, "").trim();
-            const cleanChannel = channel ? channel.replace("VEVO", "").replace("Official", "").trim() : "";
             const tryFetch = async (a, s) => {
                 try {
                     const res = await fetch(`https://api.lyrics.ovh/v1/${a}/${s}`);
@@ -240,21 +207,19 @@
                     return json.lyrics;
                 } catch { return null; }
             };
-            let lyrics = await tryFetch(cleanChannel, cleanTitle);
-            if (!lyrics && cleanTitle.includes("-")) {
+            let lyrics = null;
+            if (cleanTitle.includes("-")) {
                 const parts = cleanTitle.split("-");
                 lyrics = await tryFetch(parts[0].trim(), parts[1].trim());
                 if (!lyrics) lyrics = await tryFetch(parts[1].trim(), parts[0].trim());
             }
             if (lyrics) panel.innerText = lyrics;
-            else panel.innerText = "Lyrics not found.";
+            else panel.innerText = "Lyrics not found for this track.";
         }
 
         window.onload = () => {
-            const sBtn = document.getElementById('search-btn');
             document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
-            
             document.getElementById('skip-btn').onclick = () => { 
                 const time = state.songTime; 
                 document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>'; 
@@ -264,14 +229,9 @@
                     events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
                 });
             };
-            
             document.getElementById('mute-btn').onclick = () => { if(player.isMuted()) player.unMute(); else player.mute(); };
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
-            
-            document.getElementById('float-btn').onclick = () => {
-                document.getElementById('player-container').classList.toggle('mini-float');
-            };
-
+            document.getElementById('float-btn').onclick = () => document.getElementById('player-container').classList.toggle('mini-float');
             const stealth = document.getElementById('stealth-overlay');
             document.getElementById('stealth-btn').onclick = () => {
                 stealth.classList.add('active');
