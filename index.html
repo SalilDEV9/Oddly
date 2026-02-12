@@ -3,230 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN MAX | Jarbes Edition</title>
+    <title>TITAN MAX | OMEGA</title>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        :root { --glass: rgba(12,12,12,0.95); --neon-blue: #00f2ea; --neon-pink: #ff0055; --text-main: #ffffff; }
+        /* --- CORE PHYSICS --- */
+        :root { 
+            --bg: #050505; --glass: rgba(20, 20, 20, 0.9); 
+            --neon-blue: #00f2ea; --neon-pink: #ff0055; --neon-green: #00ff88;
+            --border: rgba(255, 255, 255, 0.1);
+        }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-        
-        header { height:70px; padding:0 20px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:1000; }
-        .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
-        .header-main { display:flex; align-items:center; gap:15px; }
-        .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.3rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; }
-        
-        .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.07); border-radius:8px; border:1px solid rgba(255,255,255,0.1); padding:5px 12px; position: relative; }
-        input { width:100%; background:transparent; border:none; color:white; font-size:1rem; font-family:'Outfit',sans-serif; padding: 5px 0; }
-        .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; color: #aaa; }
+        body { 
+            margin: 0; font-family: 'Outfit', sans-serif; background: var(--bg); color: white; 
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
 
-        main { flex:1; display:flex; overflow:hidden; position:relative; }
-        #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; }
-        #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); }
-        #player-embed { width:100%; height:100%; }
+        /* --- HEADER (THE COMMAND DECK) --- */
+        header {
+            height: 75px; padding: 0 15px;
+            background: rgba(0,0,0,0.95); /* Solid backing to prevent touch bleed */
+            border-bottom: 1px solid var(--border);
+            display: flex; flex-direction: column; justify-content: center;
+            flex-shrink: 0; z-index: 10000;
+        }
+        .dev-tag { font-size: 0.6rem; color: #666; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+        .head-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .brand { 
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; 
+            background: linear-gradient(90deg, #fff, var(--neon-blue)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- INPUT ENGINE (GOOGLE ENGINEERED) --- */
+        #search-form { flex: 1; display: flex; height: 40px; }
+        .input-box {
+            flex: 1; display: flex; align-items: center;
+            background: #111; border: 1px solid #333; border-radius: 8px;
+            padding: 0 12px; transition: 0.2s;
+        }
+        .input-box:focus-within { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 234, 0.2); }
+        input {
+            width: 100%; background: transparent; border: none; color: white;
+            font-size: 16px; /* Prevents iOS Zoom */
+            font-family: 'Outfit', sans-serif; height: 100%;
+        }
+        .btn-search { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding-left: 10px; }
+
+        /* --- MAIN STAGE --- */
+        main { flex: 1; display: flex; overflow: hidden; position: relative; }
+        #stage { 
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); z-index: 1;
+        }
+
+        /* --- THE PLAYER (ELON MUSK AESTHETIC) --- */
+        #player-wrapper {
+            width: 95%; max-width: 900px; aspect-ratio: 16/9;
+            background: #000; border-radius: 0px; 
+            box-shadow: 0 0 40px rgba(0, 242, 234, 0.1);
+            position: relative; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        #player-embed { width: 100%; height: 100%; }
+
+        /* MINI FLOAT MODE */
+        #player-wrapper.mini {
+            position: fixed; bottom: 20px; right: 20px; width: 200px; z-index: 20000;
+            border: 1px solid var(--neon-blue); border-radius: 8px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.9);
+        }
+
+        /* --- CONTROLS --- */
+        .controls { 
+            margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; 
+            width: 100%; padding: 0 10px;
+        }
+        .btn {
+            padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.05); color: #ddd; font-family: 'Orbitron'; font-size: 0.7rem;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn.blue:active { background: var(--neon-blue); color: black; }
+        .btn.pink { border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn.green { border-color: var(--neon-green); color: var(--neon-green); }
+
+        /* --- SIDEBAR & LYRICS --- */
+        #sidebar { 
+            width: 300px; background: #080808; border-left: 1px solid var(--border); 
+            display: flex; flex-direction: column; z-index: 2;
+        }
+        .panel-head { padding: 15px; font-size: 0.7rem; color: #666; text-transform: uppercase; border-bottom: 1px solid #1a1a1a; }
+        #queue { flex: 1; overflow-y: auto; padding: 10px; }
         
-        .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:5px; }
-        .action-btn { padding:10px 16px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:white; font-family:'Orbitron',sans-serif; font-size:0.7rem; cursor:pointer; transition: 0.2s; }
-        .action-btn:hover { background: rgba(255,255,255,0.1); }
-        .action-btn:active { background: var(--neon-blue); color: #000; }
-        
-        #skip-btn { border-color:var(--neon-pink); color:var(--neon-pink); }
-        #mute-btn { border-color: #ff9900; color: #ff9900; }
-        #float-btn { border-color: #00ff88; color: #00ff88; }
-        
-        #sidebar { width:320px; background:#080808; border-left:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; }
-        .sidebar-header { padding:15px; font-size:0.75rem; color:#888; text-transform:uppercase; border-bottom:1px solid #222; }
-        #queue { flex:1; overflow-y:auto; padding:10px; }
-        .queue-item { display:flex; gap:10px; padding:10px; margin-bottom:5px; border-radius:6px; cursor:pointer; border: 1px solid transparent; transition: 0.2s; }
-        .queue-item.active { border-color: var(--neon-blue); background:rgba(0,242,234,0.1); }
-        .queue-item img { width:80px; height:45px; border-radius:4px; object-fit: cover; }
-        
-        #lyrics-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 350px; background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink); transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto; }
+        .item { display: flex; gap: 10px; padding: 10px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .item.active { border: 1px solid var(--neon-blue); background: rgba(0, 242, 234, 0.05); }
+        .item img { width: 70px; height: 40px; border-radius: 4px; object-fit: cover; }
+        .item .info { overflow: hidden; display: flex; align-items: center; }
+        .item .title { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        #lyrics-panel { 
+            position: absolute; top: 0; right: 0; bottom: 0; width: 350px; 
+            background: rgba(0,0,0,0.98); border-left: 1px solid var(--neon-pink);
+            transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 25px; overflow-y: auto;
+        }
         #lyrics-panel.show { transform: translateX(0); }
 
-        #stealth-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:none; align-items:center; justify-content:center; }
-        #stealth-overlay.active { display:flex; }
-        .stealth-hint { color: #333; font-family:'Orbitron'; font-size: 0.8rem; }
+        /* --- STEALTH MODE --- */
+        #stealth-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 30000; display: none;
+            align-items: center; justify-content: center;
+        }
+        #stealth-layer.active { display: flex; }
 
         @media (max-width: 900px) {
             main { flex-direction: column; }
-            #stage { height: 40vh; flex: none; }
-            #sidebar { width: 100%; height: 60vh; flex: none; }
+            #stage { height: 45vh; flex: none; }
+            #sidebar { width: 100%; height: 55vh; flex: none; }
             #lyrics-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
+
     <header>
-        <div class="dev-top">Engineered by <span style="color:var(--neon-blue)">Salil</span></div>
-        <div class="header-main">
+        <div class="dev-tag">System: <span>Omega</span></div>
+        <div class="head-row">
             <div class="brand">TITAN</div>
-            <div class="search-bar">
-                <input type="text" id="query" placeholder="Search music..." value="Arijit Singh Lofi" autocomplete="off">
-                <button class="search-btn-icon" id="search-btn">🔍</button>
-            </div>
+            <form id="search-form" onsubmit="event.preventDefault(); performSearch();">
+                <div class="input-box">
+                    <input type="text" id="query" placeholder="Command..." value="Arijit Singh Audio" autocomplete="off">
+                    <button type="submit" class="btn-search">🔍</button>
+                </div>
+            </form>
         </div>
     </header>
+
     <main>
         <section id="stage">
-            <div id="player-container"><div id="player-embed"></div></div>
-            <div class="controls-bar">
-                <button class="action-btn" id="full-btn">⛶ FULL</button>
-                <button class="action-btn" id="float-btn">❐ FLOAT</button>
-                <button class="action-btn" id="mute-btn">🔇 MUTE</button>
-                <button class="action-btn" id="skip-btn">⚡ REBOOT</button>
-                <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
-                <button class="action-btn" id="lyrics-btn">LYRICS</button>
+            <div id="player-wrapper">
+                <div id="player-embed"></div>
+            </div>
+
+            <div class="controls">
+                <button class="btn blue" onclick="toggleFullscreen()">⛶ FULL</button>
+                <button class="btn green" onclick="toggleFloat()">❐ MINI</button>
+                <button class="btn" onclick="toggleMute()" id="btn-mute">🔇 MUTE</button>
+                <button class="btn pink" onclick="skipAd()">⚡ SKIP AD</button>
+                <button class="btn" onclick="toggleStealth()">⚫ STEALTH</button>
+                <button class="btn" onclick="toggleLyrics()">LYRICS</button>
             </div>
         </section>
-        <aside id="sidebar"><div class="sidebar-header">Operational Queue</div><div id="queue"></div></aside>
+
+        <aside id="sidebar">
+            <div class="panel-head">Operational Queue</div>
+            <div id="queue"></div>
+        </aside>
+
         <aside id="lyrics-panel">
-            <h3 style="color:var(--neon-pink); text-align:center;">NEURAL LYRICS</h3>
-            <div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center; font-size: 0.9rem;">--</div>
+            <h3 style="color:var(--neon-pink); text-align:center; margin-top:0;">NEURAL LYRICS</h3>
+            <div id="lyrics-text" style="color:#aaa; white-space: pre-wrap; text-align:center; font-size:0.95rem; line-height:1.6;">--</div>
         </aside>
     </main>
-    
-    <div id="stealth-overlay"><div class="stealth-hint">DOUBLE TAP TO WAKE</div></div>
+
+    <div id="stealth-layer">
+        <div style="color:#222; font-family:'Orbitron'; font-size:0.8rem;">DOUBLE TAP TO WAKE</div>
+    </div>
+
+    <audio id="ghost-audio" loop playsinline style="display:none;">
+        <source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg">
+    </audio>
 
     <script>
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
-        let player, state = { playlist: [], index: 0, songTime: 0 };
+        let player;
+        let state = { playlist: [], index: 0, time: 0 };
+        const ghost = document.getElementById('ghost-audio');
 
+        // --- CORE ENGINE ---
         function onYouTubeIframeAPIReady() {
-            // Initial call to set up a blank player
-            createPlayer();
-        }
-
-        function createPlayer(videoId = '', startTime = 0) {
-            if (player && typeof player.destroy === 'function') {
-                player.destroy();
-            }
+            // Initialize empty to warm up the API
             player = new YT.Player('player-embed', {
-                height: '100%', width: '100%', videoId: videoId,
-                playerVars: { 
-                    'autoplay': 1, 
-                    'controls': 1, 
-                    'playsinline': 1, 
-                    'rel': 0,
-                    'origin': window.location.origin,
-                    'start': Math.floor(startTime) 
-                },
-                events: { 
-                    'onReady': (e) => { if(videoId) e.target.playVideo(); },
-                    'onStateChange': onPlayerStateChange, 
-                    'onError': (e) => { console.error("YT Error:", e.data); nextVideo(); }
-                }
+                height: '100%', width: '100%',
+                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
+                events: { 'onStateChange': onStateChange, 'onError': nextVideo }
             });
+            setTimeout(performSearch, 800);
         }
 
         async function performSearch() {
-            const q = document.getElementById('query').value.trim();
+            const input = document.getElementById('query');
+            const q = input.value.trim();
             if(!q) return;
-            
-            const queueDiv = document.getElementById('queue');
-            queueDiv.innerHTML = '<div style="padding:20px; color:#555;">Querying Satellite...</div>';
+
+            // Note: We leave focus on the input so you can keep typing if you want
+            // To hide keyboard, user can hit 'Done' on their phone
+
+            const queue = document.getElementById('queue');
+            queue.style.opacity = '0.4';
 
             try {
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
                 const data = await res.json();
+                queue.style.opacity = '1';
 
                 if(data.items && data.items.length > 0) {
                     state.playlist = data.items;
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
-                } else {
-                    queueDiv.innerHTML = '<div style="padding:20px; color:red;">No Data Found. Check API Key.</div>';
                 }
-            } catch(e) {
-                console.error("Titan System Error:", e);
-                queueDiv.innerHTML = '<div style="padding:20px; color:red;">Network Failure.</div>';
+            } catch(e) { 
+                queue.style.opacity = '1';
+                console.log("Titan Error: Network or Quota");
             }
         }
 
-        function loadVideo(i, startTime = 0) {
-            state.index = i;
-            const videoId = state.playlist[i].id.videoId;
+        function loadVideo(index, startTime = 0) {
+            state.index = index;
+            state.time = startTime;
             
-            // Re-create player to ensure clean state and autoplay bypass on many browsers
-            createPlayer(videoId, startTime);
-            renderQueue();
-            
-            const item = state.playlist[i];
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: item.snippet.title,
-                    artist: item.snippet.channelTitle,
-                    artwork: [{ src: item.snippet.thumbnails.high.url }]
-                });
+            if(state.playlist[index]) {
+                const id = state.playlist[index].id.videoId;
+                if(player && player.loadVideoById) {
+                    player.loadVideoById({ videoId: id, startSeconds: startTime });
+                }
+                renderQueue();
+                updateSession(state.playlist[index]);
+                fetchLyrics(state.playlist[index]);
             }
-            fetchSmartLyrics(item.snippet.title, item.snippet.channelTitle);
         }
 
-        function onPlayerStateChange(e) {
+        function onStateChange(e) {
             if (e.data === YT.PlayerState.PLAYING) {
-                state.songTime = player.getCurrentTime();
+                ghost.play().catch(()=>{}); // Activate Ghost Audio
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
+                
+                // Precise Time Tracking
+                const timer = setInterval(() => {
+                    if (player && player.getPlayerState() === 1) state.time = player.getCurrentTime();
+                    else clearInterval(tracker);
+                }, 1000);
+            } 
+            else if (e.data === YT.PlayerState.PAUSED) {
+                ghost.pause();
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
             }
-            if (e.data === YT.PlayerState.ENDED) {
-                nextVideo();
-            }
+            if (e.data === 0) nextVideo();
         }
 
         function nextVideo() {
-            if (state.index < state.playlist.length - 1) {
-                loadVideo(state.index + 1);
-            }
+            if (state.index < state.playlist.length - 1) loadVideo(state.index + 1);
         }
 
         function renderQueue() {
-            const queue = document.getElementById('queue');
-            queue.innerHTML = state.playlist.map((v, i) => `
-                <div class="queue-item ${i === state.index ? 'active' : ''}" onclick="loadVideo(${i})">
-                    <img src="${v.snippet.thumbnails.default.url}">
-                    <div style="flex:1; overflow:hidden;">
-                        <div style="font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${v.snippet.title}</div>
-                        <div style="font-size:0.7rem; color:#666;">${v.snippet.channelTitle}</div>
-                    </div>
-                </div>`).join('');
+            const html = state.playlist.map((item, i) => `
+                <div class="item ${i === state.index ? 'active' : ''}" onclick="loadVideo(${i})">
+                    <img src="${item.snippet.thumbnails.default.url}">
+                    <div class="info"><div class="title">${item.snippet.title}</div></div>
+                </div>
+            `).join('');
+            document.getElementById('queue').innerHTML = html;
         }
 
-        async function fetchSmartLyrics(title, artist) {
-            const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Analyzing Audio Streams...";
+        // --- CONTROL LOGIC ---
+        function skipAd() {
+            // Constructor-Level Rebuild (The "Einstein" Fix)
+            const currentTime = state.time;
+            const currentId = state.playlist[state.index].id.videoId;
             
-            const cleanTitle = title.split('(')[0].split('[')[0].replace(/official video|lyric|audio/gi, '').trim();
-            try {
-                const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(cleanTitle)}`);
-                const data = await res.json();
-                panel.innerText = data.lyrics || "Sir, lyrics could not be retrieved for this track.";
-            } catch {
-                panel.innerText = "Connection to Lyrics Database failed.";
+            document.getElementById('player-wrapper').innerHTML = '<div id="player-embed"></div>';
+            
+            player = new YT.Player('player-embed', {
+                height: '100%', width: '100%',
+                videoId: currentId,
+                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0, 'start': Math.floor(currentTime) },
+                events: { 'onStateChange': onStateChange, 'onError': nextVideo }
+            });
+        }
+
+        function toggleFloat() {
+            document.getElementById('player-wrapper').classList.toggle('mini');
+        }
+
+        function toggleMute() {
+            const btn = document.getElementById('btn-mute');
+            if(player.isMuted()) { player.unMute(); btn.innerText = "🔇 MUTE"; btn.style.color = "#ddd"; }
+            else { player.mute(); btn.innerText = "🔊 UNMUTE"; btn.style.color = "orange"; }
+        }
+
+        function toggleFullscreen() {
+            if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
+        function toggleLyrics() {
+            document.getElementById('lyrics-panel').classList.toggle('show');
+        }
+
+        // --- STEALTH LOGIC ---
+        const stealth = document.getElementById('stealth-layer');
+        let lastTap = 0;
+        function toggleStealth() {
+            stealth.classList.add('active');
+            if(navigator.wakeLock) navigator.wakeLock.request('screen').catch(()=>{});
+        }
+        stealth.onclick = () => {
+            const now = Date.now();
+            if(now - lastTap < 400) stealth.classList.remove('active');
+            lastTap = now;
+        };
+
+        // --- SMART LYRICS ---
+        async function fetchLyrics(item) {
+            const panel = document.getElementById('lyrics-text');
+            panel.innerText = "Processing Neural Net...";
+            
+            const title = item.snippet.title;
+            const channel = item.snippet.channelTitle;
+
+            const cleanT = title.toLowerCase().replace(/\(.*\)|\[.*\]/g, "").replace(/official|video|audio|lyric|hd|4k/g, "").replace(/ft\.|feat\./g, "").trim();
+            const cleanC = channel.replace("VEVO", "").replace("Official", "").trim();
+
+            const get = async (a, s) => {
+                try {
+                    const r = await fetch(`https://api.lyrics.ovh/v1/${a}/${s}`);
+                    const j = await r.json();
+                    return j.lyrics;
+                } catch { return null; }
+            };
+
+            let txt = await get(cleanC, cleanT); // Try 1
+            if(!txt && cleanT.includes("-")) {
+                const p = cleanT.split("-");
+                txt = await get(p[0].trim(), p[1].trim()); // Try 2
+                if(!txt) txt = await get(p[1].trim(), p[0].trim()); // Try 3
+            }
+
+            panel.innerText = txt ? txt : "Lyrics not found in neural database.";
+        }
+
+        function updateSession(item) {
+            if ('mediaSession' in navigator) {
+                const img = item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url;
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: item.snippet.title, artist: item.snippet.channelTitle,
+                    artwork: [{ src: img }]
+                });
+                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
+                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+                navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
             }
         }
-
-        window.onload = () => {
-            document.getElementById('search-btn').onclick = performSearch;
-            document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
-            document.getElementById('lyrics-btn').onclick = () => document.getElementById('lyrics-panel').classList.toggle('show');
-            document.getElementById('full-btn').onclick = () => {
-                if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-                else document.exitFullscreen();
-            };
-            document.getElementById('mute-btn').onclick = () => {
-                if(player.isMuted()) { player.unMute(); document.getElementById('mute-btn').innerText = "🔇 MUTE"; }
-                else { player.mute(); document.getElementById('mute-btn').innerText = "🔊 UNMUTE"; }
-            };
-            document.getElementById('skip-btn').onclick = () => loadVideo(state.index, player.getCurrentTime());
-            
-            const stealth = document.getElementById('stealth-overlay');
-            document.getElementById('stealth-btn').onclick = () => stealth.classList.add('active');
-            let lastTap = 0;
-            stealth.onclick = () => {
-                const now = Date.now();
-                if(now - lastTap < 400) stealth.classList.remove('active');
-                lastTap = now;
-            };
-        };
     </script>
 </body>
 </html>
