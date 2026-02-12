@@ -7,10 +7,10 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. TITAN MAX DESIGN SYSTEM --- */
+        /* --- 1. DESIGN SYSTEM --- */
         :root {
-            --glass: rgba(10, 10, 10, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(12, 12, 12, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --neon-blue: #00f2ea;
             --neon-pink: #ff0055;
             --text-main: #ffffff;
@@ -22,45 +22,33 @@
             margin: 0;
             font-family: 'Outfit', sans-serif;
             background: #050505;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
             color: var(--text-main);
-            height: 100vh;
+            height: 100vh; /* Critical for scrolling */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Prevents whole page scroll */
         }
 
         /* --- 2. HEADER --- */
         header {
-            padding: 15px 25px;
+            height: 60px; /* Fixed height */
+            padding: 0 20px;
             background: var(--glass);
-            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+            flex-shrink: 0; /* Never shrink */
             z-index: 1000;
-            flex-shrink: 0;
         }
 
         .brand { 
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.6rem; 
-            font-weight: 900; 
-            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem;
             background: linear-gradient(90deg, #fff, var(--neon-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            user-select: none;
+            white-space: nowrap;
         }
-        
-        .logo-icon { font-size: 1.8rem; filter: drop-shadow(0 0 5px var(--neon-blue)); }
 
         .search-bar {
             flex: 1;
@@ -68,14 +56,7 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             border: 1px solid var(--glass-border);
-            padding: 8px 15px;
-            transition: 0.3s;
-        }
-
-        .search-bar:focus-within {
-            background: rgba(0, 0, 0, 0.6);
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 242, 234, 0.2);
+            padding: 5px 10px;
         }
 
         input {
@@ -85,311 +66,239 @@
             color: white;
             font-size: 1rem;
             font-family: 'Outfit', sans-serif;
-            letter-spacing: 0.5px;
         }
 
         button.icon-btn {
-            background: transparent;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #aaa;
-            transition: 0.2s;
+            background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: #aaa;
         }
-        button.icon-btn:hover { color: #fff; transform: scale(1.1); }
 
-        /* --- 3. MAIN LAYOUT --- */
+        /* --- 3. MAIN LAYOUT (The Fix) --- */
         main {
+            flex: 1; /* Takes remaining height */
             display: flex;
-            flex: 1;
-            overflow: hidden;
+            overflow: hidden; /* Stops spilling */
             position: relative;
         }
 
-        /* STAGE */
+        /* STAGE (Video Area) */
         #stage {
-            flex: 1;
+            flex: 1; /* Takes available width */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
             position: relative;
-            background: rgba(0,0,0,0.3);
         }
 
-        #player-wrapper {
-            width: 90%;
-            max-width: 1100px;
+        #player-container {
+            width: 100%;
+            max-width: 1000px;
             aspect-ratio: 16/9;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.1);
             background: #000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
         /* CONTROLS */
         .controls-bar {
-            margin-top: 30px;
+            margin-top: 20px;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
+            padding: 10px;
         }
 
         .action-btn {
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 4px;
             border: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.05);
             color: white;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
         }
+        .action-btn:active { background: var(--neon-blue); color: #000; }
 
-        .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-blue); }
-        .action-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; box-shadow: 0 0 20px rgba(0, 242, 234, 0.4); }
-
-        /* SPECIAL POCKET MODE BUTTON */
-        #pocket-btn {
-            border-color: var(--neon-pink);
-            background: rgba(255, 0, 85, 0.1);
-        }
-        #pocket-btn:hover {
-            background: var(--neon-pink);
-            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
-        }
+        /* POCKET MODE BUTTON */
+        #pocket-btn { border-color: var(--neon-pink); background: rgba(255, 0, 85, 0.15); }
 
         /* DEVELOPER BADGE */
         .dev-badge {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.4);
-            font-family: 'Outfit', sans-serif;
-            letter-spacing: 1px;
-            pointer-events: none;
+            position: absolute; bottom: 10px; right: 15px;
+            font-size: 0.7rem; color: #555; pointer-events: none;
         }
-        .dev-badge span { color: var(--neon-blue); font-weight: bold; }
 
-        /* --- 4. SIDEBAR --- */
+        /* --- 4. SIDEBAR (The Scroll Engine) --- */
         #sidebar {
-            width: 380px;
-            background: rgba(15, 15, 15, 0.95);
+            width: 350px;
+            background: #080808;
             border-left: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
-            transition: 0.4s;
             z-index: 10;
+            height: 100%; /* Full height of parent */
         }
 
         .sidebar-header {
-            padding: 15px 20px;
+            padding: 15px;
             font-size: 0.8rem;
             color: #888;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid var(--glass-border);
-            flex-shrink: 0;
+            border-bottom: 1px solid #222;
+            background: #111;
+            flex-shrink: 0; /* Header stays fixed */
         }
 
+        /* QUEUE LIST (Scrollable Area) */
         #queue {
-            flex: 1;
-            overflow-y: auto;
+            flex: 1; /* Fills remaining sidebar height */
+            overflow-y: auto; /* ENABLE SCROLL */
             padding: 10px;
         }
 
-        #queue::-webkit-scrollbar { width: 6px; }
-        #queue::-webkit-scrollbar-track { background: #111; }
-        #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        #queue::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+        /* Scrollbar Styling */
+        #queue::-webkit-scrollbar { width: 8px; }
+        #queue::-webkit-scrollbar-track { background: #000; }
+        #queue::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
         .queue-item {
             display: flex;
-            gap: 15px;
-            padding: 12px;
-            border-radius: 8px;
+            gap: 10px;
+            padding: 10px;
             margin-bottom: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: 0.2s;
             border: 1px solid transparent;
+            transition: 0.2s;
         }
+        .queue-item:hover { background: #1a1a1a; }
+        .queue-item.active { background: rgba(0, 242, 234, 0.08); border-color: var(--neon-blue); }
 
-        .queue-item:hover { background: rgba(255,255,255,0.05); }
-        .queue-item.active { 
-            background: rgba(0, 242, 234, 0.05); 
-            border-color: rgba(0, 242, 234, 0.3);
-        }
-        
-        .queue-item img { width: 100px; height: 56px; object-fit: cover; border-radius: 4px; }
+        .queue-item img { width: 90px; height: 50px; object-fit: cover; border-radius: 4px; background: #222; }
         .queue-item .meta { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        .queue-item .title { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .queue-item .artist { font-size: 0.8rem; color: #777; }
+        .queue-item .title { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item .artist { font-size: 0.75rem; color: #777; }
 
-        /* --- 5. LYRICS PANEL --- */
-        #lyrics-panel {
-            position: absolute;
-            top: 0; right: 0; bottom: 0;
-            width: 380px;
-            background: rgba(5, 5, 5, 0.98);
-            border-left: 1px solid var(--neon-pink);
-            padding: 40px 30px;
-            transform: translateX(100%);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 100;
-            overflow-y: auto;
-        }
-        #lyrics-panel.show { transform: translateX(0); }
-
-        /* --- 6. POCKET MODE OVERLAY (THE STEALTH LAYER) --- */
-        #pocket-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-        }
-        
-        #pocket-overlay.active { display: flex; }
-        
-        .pocket-msg { font-family: 'Orbitron'; font-size: 1rem; margin-bottom: 20px; color: #444; }
-        
-        .unlock-slider {
-            width: 250px;
-            height: 50px;
-            background: #111;
-            border-radius: 25px;
-            position: relative;
-            border: 1px solid #333;
-        }
-        
-        .unlock-thumb {
-            width: 46px; height: 46px;
-            background: var(--neon-blue);
-            border-radius: 50%;
-            position: absolute;
-            top: 1px; left: 2px;
-            cursor: pointer;
-            display: flex;
-            align-items: center; justify-content: center;
-            font-weight: bold; color: black;
-            transition: left 0.1s;
-        }
-
-        /* CINEMA MODE */
-        body.cinema-mode #sidebar { width: 0; opacity: 0; }
-        body.cinema-mode #stage { width: 100vw; }
-        body.cinema-mode #player-wrapper { width: 100%; height: 100%; max-width: none; border-radius: 0; border: none; }
-        body.cinema-mode header, body.cinema-mode .dev-badge { display: none; }
-        body.cinema-mode .controls-bar { position: absolute; bottom: 40px; opacity: 0; transition: 0.3s; z-index: 99; }
-        body.cinema-mode #stage:hover .controls-bar { opacity: 1; }
-
-        /* MOBILE */
+        /* --- 5. MOBILE RESPONSIVE FIX --- */
         @media (max-width: 900px) {
             main { flex-direction: column; }
-            #sidebar { width: 100%; height: 40%; }
-            #lyrics-panel { width: 100%; transform: translateY(100%); }
-            #lyrics-panel.show { transform: translateY(0); }
-            header { padding: 10px 15px; }
-            .brand { font-size: 1.2rem; }
+            
+            /* On mobile, Stage takes 40% height, Sidebar takes 60% */
+            #stage { height: 40vh; flex: none; }
+            #sidebar { width: 100%; height: 60vh; flex: none; }
+            
+            /* Adjust controls for mobile */
+            .controls-bar { margin-top: 10px; }
+            #player-container { width: 100%; height: 100%; max-width: none; }
         }
+
+        /* --- 6. EXTRAS (Pocket Mode / Lyrics) --- */
+        #pocket-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 9999; display: none;
+            align-items: center; justify-content: center; flex-direction: column;
+        }
+        #pocket-overlay.active { display: flex; }
+        .unlock-slider { width: 200px; height: 50px; background: #111; border-radius: 25px; position: relative; border: 1px solid #333; margin-top: 20px; }
+        .unlock-thumb { width: 46px; height: 46px; background: var(--neon-blue); border-radius: 50%; position: absolute; top: 1px; left: 2px; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; }
+
+        #lyrics-panel {
+            position: absolute; top: 0; right: 0; bottom: 0; width: 350px;
+            background: rgba(0,0,0,0.95); border-left: 1px solid var(--neon-pink);
+            transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px; overflow-y: auto;
+        }
+        #lyrics-panel.show { transform: translateX(0); }
+        @media (max-width: 900px) { #lyrics-panel { width: 100%; } }
+
+        /* Cinema Mode */
+        body.cinema-mode #sidebar { display: none; }
+        body.cinema-mode header { display: none; }
+        body.cinema-mode #stage { height: 100vh; }
+        body.cinema-mode .dev-badge { display: none; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">
-            <span class="logo-icon">⚡</span> TITAN MAX
-        </div>
+        <div class="brand">TITAN MAX</div>
         <div class="search-bar">
-            <input type="text" id="query" placeholder="Search..." value="Arijit Singh Audio">
+            <input type="text" id="query" placeholder="Search song..." value="Arijit Singh Audio">
             <button class="icon-btn" id="search-btn">🔍</button>
         </div>
     </header>
 
     <main>
         <section id="stage">
-            <div id="player-wrapper">
+            <div id="player-container">
                 <div id="player"></div>
             </div>
-
+            
             <div class="controls-bar">
                 <button class="action-btn" id="cinema-btn">Cinema</button>
                 <button class="action-btn" id="lyrics-btn">Lyrics</button>
-                <button class="action-btn" id="fullscreen-btn">Full</button>
-                <button class="action-btn" id="pocket-btn">🔒 POCKET MODE</button>
+                <button class="action-btn" id="pocket-btn">🔒 POCKET</button>
+                <button class="action-btn" onclick="document.body.requestFullscreen()">[ ]</button>
             </div>
-            
-            <div class="dev-badge">System Architect: <span>Salil</span></div>
+
+            <div class="dev-badge">Architect: Salil</div>
         </section>
 
-        <aside id="lyrics-panel">
-            <h2 style="color:var(--neon-pink); text-align:center; font-family:'Orbitron',sans-serif; margin-bottom:30px;">LYRICS ENGINE</h2>
-            <div id="lyrics-text" style="line-height:1.8; color:#ccc; white-space: pre-wrap; text-align:center; font-size: 1.1rem;">
-                -- Standby --
+        <aside id="sidebar">
+            <div class="sidebar-header">Queue (25 Tracks)</div>
+            <div id="queue">
+                <div style="padding:20px; text-align:center; color:#555;">System Ready.</div>
             </div>
         </aside>
 
-        <aside id="sidebar">
-            <div class="sidebar-header">Operational Queue</div>
-            <div id="queue">
-                <div style="padding:40px 20px; text-align:center; color:#444;">
-                    Initializing Titan Max...
-                </div>
-            </div>
+        <aside id="lyrics-panel">
+            <h3 style="color:var(--neon-pink); text-align:center; margin-top:0;">LYRICS</h3>
+            <div id="lyrics-text" style="color:#ccc; white-space: pre-wrap; text-align:center; font-size: 1rem;">--</div>
         </aside>
     </main>
 
     <div id="pocket-overlay">
-        <div class="pocket-msg">SYSTEM LOCKED • AUDIO ACTIVE</div>
-        <div class="unlock-slider" id="unlock-area">
-            <div class="unlock-thumb" id="unlock-thumb">➜</div>
-        </div>
-        <div style="margin-top:20px; color:#222; font-size:0.8rem;">Slide to Unlock</div>
+        <div style="color:#333; font-family:'Orbitron';">AUDIO ACTIVE</div>
+        <div class="unlock-slider" id="unlock-area"><div class="unlock-thumb" id="unlock-thumb">➜</div></div>
     </div>
 
-    <audio id="ghost-audio" loop>
-        <source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg">
-    </audio>
+    <audio id="ghost-audio" loop><source src="https://github.com/anars/blank-audio/blob/master/10-seconds-of-silence.mp3?raw=true" type="audio/mpeg"></audio>
 
     <script>
-        // --- 1. CONFIGURATION ---
         const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w'; 
         let player;
-        let state = { playlist: [], index: 0, lyricsOpen: false, cinemaMode: false };
-        let wakeLock = null; // Variable for Wake Lock API
+        let state = { playlist: [], index: 0 };
+        const ghostAudio = document.getElementById('ghost-audio');
 
-        // --- 2. INITIALIZATION ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '100%', width: '100%',
-                playerVars: { 'autoplay': 1, 'controls': 1, 'modestbranding': 1, 'playsinline': 1, 'rel': 0 },
+                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1, 'rel': 0 },
                 events: { 'onStateChange': onPlayerStateChange, 'onError': nextVideo }
             });
-            setTimeout(performSearch, 1500); // Auto-start
+            // Auto-Ignition
+            setTimeout(performSearch, 1500);
         }
 
-        // --- 3. SEARCH ENGINE ---
         async function performSearch() {
-            const queryInput = document.getElementById('query');
-            const q = queryInput.value.trim();
+            const q = document.getElementById('query').value.trim();
             if(!q) return;
+            
+            const queueDiv = document.getElementById('queue');
+            queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Scanning...</div>';
 
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`;
             
             try {
-                document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center; color:#666;">Scanning database...</div>';
-
-                const res = await fetch(url);
+                // Timeout logic to prevent "Busy" loop
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
                 const data = await res.json();
                 
                 if(data.items && data.items.length > 0) {
@@ -397,23 +306,33 @@
                     state.index = 0;
                     renderQueue();
                     loadVideo(0);
+                    ghostAudio.play().catch(e => {});
                 } else {
-                    document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
+                    queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No results found.</div>';
                 }
             } catch(e) { 
-                console.error(e);
-                document.getElementById('queue').innerHTML = '<div style="padding:20px; text-align:center; color:red;">Connection Error.</div>';
+                queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#ff4444;">Connection Error. Retry.</div>';
             }
         }
 
-        // --- 4. PLAYER LOGIC ---
         function loadVideo(i) {
             state.index = i;
             const item = state.playlist[i];
             player.loadVideoById(item.id.videoId);
             renderQueue();
             fetchLyrics(item.snippet.title);
-            updateMediaSession(item);
+            
+            // Media Session Update
+            if('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: item.snippet.title,
+                    artist: item.snippet.channelTitle,
+                    artwork: [{ src: item.snippet.thumbnails.high.url }]
+                });
+                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
+                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
+                navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
+            }
         }
 
         function renderQueue() {
@@ -427,158 +346,76 @@
                     </div>
                 </div>
             `).join('');
+            
             const active = document.querySelector('.queue-item.active');
-            if(active) active.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+            if(active) active.scrollIntoView({behavior: 'smooth', block: 'center'});
         }
 
         function onPlayerStateChange(e) {
-            if (e.data === 0) nextVideo(); // Ended
-            if (e.data === 1) document.getElementById('ghost-audio').play(); // Keep session alive
+            if (e.data === 0) nextVideo();
+            if (e.data === 1) ghostAudio.play();
         }
 
         function nextVideo() {
             if (state.index < state.playlist.length - 1) loadVideo(state.index + 1);
         }
 
-        // --- 5. LYRICS ENGINE ---
-        async function fetchLyrics(rawTitle) {
+        async function fetchLyrics(title) {
             const panel = document.getElementById('lyrics-text');
-            panel.innerText = "Searching lyrics...";
+            panel.innerText = "Searching...";
+            // Simple split logic
+            let parts = title.split('-');
+            let artist = parts[0] || ""; 
+            let song = parts[1] || title;
+            // Cleaning
+            song = song.replace(/\(.*\)|\[.*\]/g, "").trim();
             
-            let cleanTitle = rawTitle.replace(/\(.*\)|\[.*\]/g, "").replace(/official video|lyric video|audio/gi, "").trim();
-            let artist = "", song = cleanTitle;
-            
-            if (cleanTitle.includes("-")) {
-                const parts = cleanTitle.split("-");
-                artist = parts[0].trim();
-                song = parts[1].trim();
-            }
-
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000); 
-                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`, { signal: controller.signal });
-                clearTimeout(timeoutId);
+                const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${song}`);
                 const data = await res.json();
-                
-                if (data.lyrics) {
-                    panel.innerText = data.lyrics;
-                } else {
-                    panel.innerText = `Lyrics not found for:\n"${song}"`;
-                }
-            } catch (e) {
-                panel.innerText = "Lyrics unavailable.";
-            }
+                panel.innerText = data.lyrics || "Lyrics not found.";
+            } catch(e) { panel.innerText = "Lyrics unavailable."; }
         }
 
-        // --- 6. BACKGROUND PLAY & WAKE LOCK ---
-        function updateMediaSession(item) {
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: item.snippet.title,
-                    artist: item.snippet.channelTitle,
-                    artwork: [{ src: item.snippet.thumbnails.high.url, sizes: '480x360', type: 'image/jpeg' }]
-                });
-                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
-                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
-                navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
-            }
-        }
-
-        // WAKE LOCK FUNCTION
-        async function requestWakeLock() {
-            try {
-                wakeLock = await navigator.wakeLock.request('screen');
-                console.log('Wake Lock active');
-            } catch (err) {
-                console.error(`${err.name}, ${err.message}`);
-            }
-        }
-
-        // --- 7. EVENT LISTENERS (WINDOW LOAD) ---
-        window.onload = function() {
+        // Setup Buttons
+        window.onload = () => {
             document.getElementById('search-btn').onclick = performSearch;
             document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
             
             document.getElementById('lyrics-btn').onclick = () => {
-                state.lyricsOpen = !state.lyricsOpen;
-                const panel = document.getElementById('lyrics-panel');
-                const btn = document.getElementById('lyrics-btn');
-                panel.classList.toggle('show', state.lyricsOpen);
-                btn.classList.toggle('active', state.lyricsOpen);
+                document.getElementById('lyrics-panel').classList.toggle('show');
             };
-
+            
             document.getElementById('cinema-btn').onclick = () => {
-                state.cinemaMode = !state.cinemaMode;
-                document.body.classList.toggle('cinema-mode', state.cinemaMode);
-                const btn = document.getElementById('cinema-btn');
-                btn.classList.toggle('active', state.cinemaMode);
-                btn.innerText = state.cinemaMode ? "EXIT" : "CINEMA";
+                document.body.classList.toggle('cinema-mode');
             };
 
-            document.getElementById('fullscreen-btn').onclick = () => {
-                if (!document.fullscreenElement) {
-                    document.body.requestFullscreen();
-                } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
-                }
-            };
-
-            // --- POCKET MODE LOGIC ---
-            const pocketBtn = document.getElementById('pocket-btn');
+            // Pocket Mode
             const overlay = document.getElementById('pocket-overlay');
             const thumb = document.getElementById('unlock-thumb');
-            let isDragging = false;
-
-            pocketBtn.onclick = async () => {
+            
+            document.getElementById('pocket-btn').onclick = () => {
                 overlay.classList.add('active');
-                await requestWakeLock(); // Prevent screen sleep
-                // Try to go fullscreen for full black immersion
-                if (!document.fullscreenElement) document.body.requestFullscreen();
+                if(navigator.wakeLock) navigator.wakeLock.request('screen').catch(e=>{});
             };
 
-            // Unlock Slider Logic
-            thumb.addEventListener('mousedown', startDrag);
-            thumb.addEventListener('touchstart', startDrag);
-
-            function startDrag(e) {
-                isDragging = true;
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('touchmove', drag);
-                document.addEventListener('mouseup', endDrag);
-                document.addEventListener('touchend', endDrag);
-            }
-
-            function drag(e) {
-                if (!isDragging) return;
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const sliderRect = document.getElementById('unlock-area').getBoundingClientRect();
-                let newLeft = clientX - sliderRect.left - 23; 
-                
-                // Bounds
-                if (newLeft < 2) newLeft = 2;
-                if (newLeft > 200) newLeft = 200;
-                
-                thumb.style.left = newLeft + 'px';
-
-                // Unlock condition
-                if (newLeft >= 195) {
-                    isDragging = false;
+            let isDragging = false;
+            thumb.addEventListener('touchstart', (e) => { isDragging = true; });
+            thumb.addEventListener('touchmove', (e) => {
+                if(!isDragging) return;
+                let touch = e.touches[0];
+                let val = touch.clientX - 20; 
+                if(val > 5 && val < 150) thumb.style.left = val + 'px';
+                if(val >= 140) {
                     overlay.classList.remove('active');
                     thumb.style.left = '2px';
-                    if (wakeLock) wakeLock.release(); // Release lock
+                    isDragging = false;
                 }
-            }
-
-            function endDrag() {
-                isDragging = false;
-                // Snap back if not unlocked
-                if (parseInt(thumb.style.left) < 195) {
-                    thumb.style.left = '2px';
-                }
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('touchmove', drag);
-            }
+            });
+            thumb.addEventListener('touchend', () => { 
+                if(parseInt(thumb.style.left) < 140) thumb.style.left = '2px';
+                isDragging = false; 
+            });
         };
     </script>
 </body>
