@@ -10,34 +10,52 @@
         :root { --glass: rgba(12,12,12,0.95); --neon-blue: #00f2ea; --neon-pink: #ff0055; --text-main: #ffffff; }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin:0; font-family:'Outfit',sans-serif; background:#050505; color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-        header { height:70px; padding:0 20px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:1000; }
+        
+        /* HEADER FIX */
+        header { height:70px; padding:0 20px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; flex-shrink:0; z-index:1000; }
         .dev-top { font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
-        .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.3rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.05); border-radius:8px; border:1px solid rgba(255,255,255,0.08); padding:5px 10px; }
-        input { width:100%; background:transparent; border:none; color:white; font-size:0.95rem; font-family:'Outfit',sans-serif; }
+        .brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.3rem; background:linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink: 0; }
+        
+        /* SEARCH BAR FIX */
+        .search-area { display:flex; align-items:center; gap:15px; width: 100%; }
+        .search-bar { flex:1; display:flex; background:rgba(255,255,255,0.07); border-radius:8px; border:1px solid rgba(255,255,255,0.1); padding:5px 12px; }
+        input { width:100%; background:transparent; border:none; color:white; font-size:1rem; font-family:'Outfit',sans-serif; padding: 5px 0; }
+        .search-btn-icon { background:none; border:none; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; padding: 0 5px; }
+
         main { flex:1; display:flex; overflow:hidden; position:relative; }
         #stage { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #1a1a1a 0%, #000 100%); position:relative; }
-        #player-container { width:100%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); }
-        .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:10px; }
-        .action-btn { padding:10px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.05); color:white; font-family:'Orbitron',sans-serif; font-size:0.7rem; cursor:pointer; }
+        #player-container { width:95%; max-width:1000px; aspect-ratio:16/9; background:#000; box-shadow:0 0 50px rgba(0,0,0,0.8); }
+        
+        .controls-bar { margin-top:15px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:5px; }
+        .action-btn { padding:10px 16px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:white; font-family:'Orbitron',sans-serif; font-size:0.7rem; cursor:pointer; }
         #skip-btn { border-color:var(--neon-pink); color:var(--neon-pink); }
-        #sidebar { width:320px; background:#080808; border-left:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; }
+        
+        #sidebar { width:320px; background:#080808; border-left:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; }
         .sidebar-header { padding:15px; font-size:0.75rem; color:#888; text-transform:uppercase; border-bottom:1px solid #222; }
         #queue { flex:1; overflow-y:auto; padding:10px; }
-        .queue-item { display:flex; gap:10px; padding:10px; margin-bottom:5px; border-radius:6px; cursor:pointer; }
-        .queue-item.active { border:1px solid var(--neon-blue); background:rgba(0,242,234,0.05); }
-        .queue-item img { width:80px; height:45px; border-radius:4px; }
+        .queue-item { display:flex; gap:10px; padding:10px; margin-bottom:5px; border-radius:6px; cursor:pointer; border: 1px solid transparent; }
+        .queue-item.active { border-color: var(--neon-blue); background:rgba(0,242,234,0.05); }
+        .queue-item img { width:80px; height:45px; border-radius:4px; object-fit: cover; }
+        
         #stealth-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:none; align-items:center; justify-content:center; }
         #stealth-overlay.active { display:flex; }
-        @media (max-width: 900px) { main { flex-direction: column; } #stage { height: 45vh; flex: none; } #sidebar { width: 100%; height: 55vh; flex: none; } }
+
+        @media (max-width: 900px) {
+            main { flex-direction: column; }
+            #stage { height: 40vh; flex: none; }
+            #sidebar { width: 100%; height: 60vh; flex: none; }
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="dev-top">Engineered by <span style="color:var(--neon-blue)">Salil</span></div>
-        <div style="display:flex; align-items:center; gap:15px;">
-            <div class="brand">TITAN MAX</div>
-            <div class="search-bar"><input type="text" id="query" value="Arijit Singh Audio"><button style="background:none;border:none;cursor:pointer;" id="search-btn">🔍</button></div>
+        <div class="search-area">
+            <div class="brand">TITAN</div>
+            <div class="search-bar">
+                <input type="text" id="query" placeholder="Type here..." value="Arijit Singh Audio" autocomplete="off">
+                <button class="search-btn-icon" id="search-btn">🔍</button>
+            </div>
         </div>
     </header>
     <main>
@@ -45,7 +63,7 @@
             <div id="player-container"><div id="player-embed" style="width:100%;height:100%"></div></div>
             <div class="controls-bar">
                 <button class="action-btn" id="full-btn">⛶ FULL</button>
-                <button class="action-btn" id="mute-btn">🔇 MUTE AD</button>
+                <button class="action-btn" id="mute-btn">🔇 MUTE</button>
                 <button class="action-btn" id="skip-btn">⚡ SKIP AD</button>
                 <button class="action-btn" id="stealth-btn">⚫ STEALTH</button>
                 <button class="action-btn" id="cinema-btn">CINEMA</button>
@@ -76,13 +94,28 @@
         function onPlayerReady() { if(state.playlist.length === 0) performSearch(); }
 
         async function performSearch() {
-            const q = document.getElementById('query').value.trim();
+            const queryInput = document.getElementById('query');
+            const q = queryInput.value.trim();
             if(!q) return;
+            
+            // Hide keyboard on mobile
+            queryInput.blur(); 
+
+            const queueDiv = document.getElementById('queue');
+            queueDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Searching...</div>';
+            
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
                 const data = await res.json();
-                if(data.items) { state.playlist = data.items; state.index = 0; renderQueue(); loadVideo(0); }
-            } catch(e) { document.getElementById('queue').innerHTML = 'Search Error.'; }
+                if(data.items && data.items.length > 0) {
+                    state.playlist = data.items;
+                    state.index = 0;
+                    renderQueue();
+                    loadVideo(0);
+                } else {
+                    queueDiv.innerHTML = '<div style="padding:20px; text-align:center;">No Results.</div>';
+                }
+            } catch(e) { queueDiv.innerHTML = 'Error.'; }
         }
 
         function loadVideo(i, startTime = 0) {
@@ -94,7 +127,6 @@
         }
 
         function onPlayerStateChange(e) {
-            // STATE HANDSHAKE (SYNC LOGIC)
             if (e.data === YT.PlayerState.PLAYING) {
                 ghostAudio.play().catch(()=>{});
                 if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
@@ -123,21 +155,24 @@
         function updateMediaSession(item) {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({ title: item.snippet.title, artist: item.snippet.channelTitle });
-                // SPOTIFY-STYLE ACTIONS
-                navigator.mediaSession.setActionHandler('play', () => { player.playVideo(); });
-                navigator.mediaSession.setActionHandler('pause', () => { player.pauseVideo(); });
+                navigator.mediaSession.setActionHandler('play', () => player.playVideo());
+                navigator.mediaSession.setActionHandler('pause', () => player.pauseVideo());
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextVideo());
-                navigator.mediaSession.setActionHandler('previoustrack', () => { if(state.index > 0) loadVideo(state.index-1); });
             }
         }
 
         window.onload = () => {
-            document.getElementById('search-btn').onclick = performSearch;
-            document.getElementById('query').onkeypress = (e) => e.key === 'Enter' && performSearch();
+            const sBtn = document.getElementById('search-btn');
+            const qInp = document.getElementById('query');
+
+            sBtn.addEventListener('click', performSearch);
+            qInp.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
             document.getElementById('full-btn').onclick = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
             document.getElementById('skip-btn').onclick = () => { const time = state.songTime; document.getElementById('player-container').innerHTML = '<div id="player-embed"></div>'; createPlayer(time); };
             document.getElementById('mute-btn').onclick = () => { if(player.isMuted()) player.unMute(); else player.mute(); };
             document.getElementById('cinema-btn').onclick = () => document.body.classList.toggle('cinema-mode');
+            
             const stealth = document.getElementById('stealth-overlay');
             document.getElementById('stealth-btn').onclick = () => stealth.classList.add('active');
             let lastTap = 0;
