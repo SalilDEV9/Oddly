@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Video Hub | Jarbes Edition</title>
+    <title>JARBES | AI Video Hub</title>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
-            --surface: #161616;
+            --bg: #050505;
+            --surface: #121212;
             --accent: #00d4ff;
-            --text: #e0e0e0;
-            --border: #2a2a2a;
+            --text: #ffffff;
+            --text-dim: #999;
+            --border: #222;
         }
 
         body {
@@ -25,23 +27,31 @@
             overflow: hidden;
         }
 
+        /* Glassmorphism Header */
         header {
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--surface);
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
-            z-index: 10;
+            z-index: 100;
         }
 
-        .search-box {
+        .search-container {
             display: flex;
-            width: 450px;
+            width: 500px;
             background: #000;
             border: 1px solid var(--border);
-            border-radius: 25px;
-            padding: 4px 15px;
+            border-radius: 30px;
+            padding: 5px 20px;
+            transition: 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
         }
 
         input {
@@ -51,6 +61,7 @@
             padding: 10px;
             color: white;
             outline: none;
+            font-size: 1rem;
         }
 
         button#search-btn {
@@ -58,31 +69,35 @@
             border: none;
             color: var(--accent);
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
+        /* Main Layout */
         main {
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 1fr 400px;
             flex: 1;
             overflow: hidden;
         }
 
-        #player-wrapper {
+        #player-section {
             background: #000;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            padding: 20px;
+            padding: 30px;
         }
 
-        #player { 
-            width: 100%; 
-            aspect-ratio: 16/9; 
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+        .video-viewport {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #111;
         }
 
+        /* Sidebar */
         #sidebar {
             background: var(--surface);
             border-left: 1px solid var(--border);
@@ -90,52 +105,109 @@
             padding: 20px;
         }
 
-        .video-item {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
+        .sidebar-title {
+            color: var(--accent);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 800;
         }
 
-        .video-item:hover { background: #252525; }
-        .video-item.active { background: rgba(0, 212, 255, 0.1); border: 1px solid var(--accent); }
-        .video-item img { width: 100%; border-radius: 6px; }
-        .video-item .title { font-size: 0.85rem; font-weight: 500; }
+        .video-card {
+            display: flex;
+            gap: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .video-card:hover {
+            background: #1a1a1a;
+        }
+
+        .video-card.active {
+            background: rgba(0, 212, 255, 0.05);
+            border-color: var(--accent);
+        }
+
+        .video-card img {
+            width: 140px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .video-card .info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .video-card .video-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 800; font-size: 1.4rem;">
-        <span style="color: var(--accent);">JARBES</span> HUB
+    <div style="font-weight: 800; font-size: 1.5rem; letter-spacing: -1px;">
+        <span style="color: var(--accent);">JARBES</span><span style="color:white">HUB</span>
     </div>
-    <div class="search-box">
-        <input type="text" id="query" placeholder="Search songs or videos, Sir...">
+    <div class="search-container">
+        <input type="text" id="query" placeholder="Search song or artist, Sir...">
         <button id="search-btn">⌕</button>
     </div>
 </header>
 
 <main>
-    <section id="player-wrapper">
-        <div id="player"></div>
+    <section id="player-section">
+        <div class="video-viewport">
+            <div id="player"></div>
+        </div>
     </section>
-    
+
     <aside id="sidebar">
-        <div id="results-list"></div>
+        <div class="sidebar-title">Up Next • Auto-Playlist</div>
+        <div id="playlist-container">
+            <div style="color: var(--text-dim); text-align: center; margin-top: 100px;">
+                Ready for your command, Sir.
+            </div>
+        </div>
     </aside>
 </main>
 
 <script>
     const API_KEY = 'AIzaSyBUB6X7AvsG6z0gNtgcIdqx_C8Ssvm2B5w';
     let player;
-    let state = { playlist: [], currentIndex: 0 };
+    let state = {
+        playlist: [],
+        currentIndex: 0
+    };
 
+    // YouTube API Initialization
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
+            height: '100%',
+            width: '100%',
+            playerVars: {
+                'autoplay': 1,
+                'modestbranding': 1,
+                'rel': 0
+            },
             events: {
                 'onStateChange': onPlayerStateChange,
                 'onError': onPlayerError
@@ -147,12 +219,13 @@
         const query = document.getElementById('query').value;
         if (!query) return;
 
-        // UPDATED: videoCategoryId=10 (Music) added to prioritize songs
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${API_KEY}`;
+        // Optimized for Music: removed strict embed filter to find official songs
+        // and using videoCategoryId=10 for better music results
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${API_KEY}`;
         
         try {
-            const res = await fetch(url);
-            const data = await res.json();
+            const response = await fetch(url);
+            const data = await response.json();
             
             if (data.items && data.items.length > 0) {
                 state.playlist = data.items;
@@ -160,47 +233,60 @@
                 renderSidebar();
                 loadVideo(0);
             } else {
-                alert("No results found, Sir. Try a different search term.");
+                alert("No results found, Sir.");
             }
-        } catch (err) {
-            alert("API Error. Please check your key or daily quota.");
+        } catch (error) {
+            console.error("API Error:", error);
+            alert("Connection Error. Please check your API quota.");
         }
     }
 
     function renderSidebar() {
-        const list = document.getElementById('results-list');
-        list.innerHTML = state.playlist.map((video, index) => `
-            <div class="video-item ${index === state.currentIndex ? 'active' : ''}" onclick="loadVideo(${index})">
-                <img src="${video.snippet.thumbnails.medium.url}" />
-                <div class="title">${video.snippet.title}</div>
+        const container = document.getElementById('playlist-container');
+        container.innerHTML = state.playlist.map((item, index) => `
+            <div class="video-card ${index === state.currentIndex ? 'active' : ''}" onclick="loadVideo(${index})">
+                <img src="${item.snippet.thumbnails.medium.url}" alt="thumbnail">
+                <div class="info">
+                    <div class="video-title">${item.snippet.title}</div>
+                </div>
             </div>
         `).join('');
     }
 
     function loadVideo(index) {
         state.currentIndex = index;
-        const vId = state.playlist[index].id.videoId;
-        player.loadVideoById(vId);
+        const videoId = state.playlist[index].id.videoId;
+        player.loadVideoById(videoId);
         renderSidebar();
+        
+        // Ensure the sidebar scrolls to the active song
+        const activeCard = document.querySelector('.video-card.active');
+        if (activeCard) activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function onPlayerStateChange(event) {
-        if (event.data === YT.PlayerState.ENDED) {
+        // YT.PlayerState.ENDED = 0
+        if (event.data === 0) {
             if (state.currentIndex < state.playlist.length - 1) {
                 loadVideo(state.currentIndex + 1);
             }
         }
     }
 
-    function onPlayerError(e) {
-        console.warn("This video is restricted from embedding. Skipping to next...");
+    function onPlayerError(event) {
+        // Error codes 101/150 usually mean the video is restricted from embedding (Official Music Videos)
+        // This will automatically skip to the next available version (Lyrics/Cover)
+        console.warn("Playback restricted on this item, skipping to next version, Sir.");
         if (state.currentIndex < state.playlist.length - 1) {
             loadVideo(state.currentIndex + 1);
         }
     }
 
+    // Event Listeners
     document.getElementById('search-btn').addEventListener('click', searchVideos);
-    document.getElementById('query').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchVideos(); });
+    document.getElementById('query').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchVideos();
+    });
 </script>
 
 </body>
